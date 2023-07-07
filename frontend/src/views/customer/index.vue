@@ -144,6 +144,8 @@ export default {
     const entryNameCustomerType = ref("Loại khách hàng");
     const entryValueStatusTask = ref("");
     const entryNameStatusTask = ref("Trạng thái chăm sóc");
+    const entryAgeStatusTask = ref("Độ tuổi khách hàng");
+    const entryValueAge = ref("");
 
     const reFresh = async () => {
       const cusWork = await http_getAll(Customer_Work);
@@ -182,7 +184,29 @@ export default {
         });
       }
 
+    //   watch(entryValueAge, (newValue, oldValue) => {
+    //   // console.log('Age', newValue);
+    //   if (newValue != "") {
+    //     data.currentPage = 1;
+    //     reFresh();
+    //   } else {
+    //     data.currentPage = 1;
+    //     reFresh();
+    //   }
+    // });
 
+    // {
+    //             value: '1',
+    //             name: 'lớn hơn 18'
+    //           },
+    //           {
+    //             value: '2',
+    //             name: 'từ 18 đến 30'
+    //           },
+    //           {
+    //             value: '3',
+    //             name: 'lớn hơn 30'
+    //           }
 
       if (entryValueStatusTask.value.length > 0) {
         data.items = data.items.filter((cusWork) => {
@@ -193,6 +217,7 @@ export default {
           );
         });
       }
+
     };
 
     const reFresh1 = async () => {
@@ -209,11 +234,11 @@ export default {
     };
 
     const showAddHabit = () => {
-
+      console.log("ok");
       data.customerValue = {};
       data.showAddHabit = false;
       for (let value of data.items) {
-
+        console.log(value.checked);
         if (value.checked == true) {
           data.customerValue = value;
           data.showAddHabit = true;
@@ -231,7 +256,7 @@ export default {
 
     // computed
     const toString = computed(() => {
-     
+      console.log("Starting search");
       if (data.choseSearch == "name") {
         return data.items.map((value, index) => {
           return [value.Customer.name].join("").toLocaleLowerCase();
@@ -242,7 +267,18 @@ export default {
         });
       } else if (data.choseSearch == "phone") {
         return data.items.map((value, index) => {
+          // console.log('Value: ', [value.Customer.birthday].join("").toLocaleLowerCase());
           return [value.Customer.phone].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "age") {
+        return data.items.map( (value, index) => {
+          return [new Date().getFullYear() - new Date(value.Customer.birthday).getFullYear()].join("").toLocaleLowerCase();
+        })
+      } 
+      else if (data.choseSearch == "address") {
+        return data.items.map((value, index) => {
+          // console.log('Value: ', [value.Customer.birthday].join("").toLocaleLowerCase());
+          return [value.Customer.address].join("").toLocaleLowerCase();
         });
       } else {
         return data.items.map((value, index) => {
@@ -250,6 +286,8 @@ export default {
             value.Customer.name,
             value.Customer.email,
             value.Customer.phone,
+            value.Customer.address,
+            new Date().getFullYear() - new Date(value.Customer.birthday).getFullYear()
           ]
             .join("")
             .toLocaleLowerCase();
@@ -292,11 +330,7 @@ export default {
       } else return data.items.value;
     });
     // methods
-    const update = (item) => {
-      // console.log("updating", item);
-    };
     const deleteOne = (_id) => {
-      // console.log("deleting", _id);
     };
 
     // watch
@@ -356,7 +390,6 @@ export default {
       };
 
       data.viewCareCus = item.Customer.Tasks.map((value) => {
-
         return {
           start_date: formatDate(value.start_date),
           end_date: formatDate(value.end_date),
@@ -386,7 +419,6 @@ export default {
     const edit = (item, isCheck) => {
       data.activeShowEdit = true;
       reFresh();
-    
       data.viewValue = {
         Customer: {
           _id: item.Customer._id,
@@ -413,19 +445,23 @@ export default {
       };
 
       data.activeEdit = isCheck;
-      
     };
 
     const updateEntryValueCustomerType = (value) => {
       entryValueCustomerType.value = value;
     };
 
+    const updateEntryValueAge = (value) => {
+      entryValueAge.value = value
+    };
+
+
     const updateEntryValueStatusTask = (value) => {
       entryValueStatusTask.value = value;
     };
 
     const handleSelectAll = (value) => {
-     
+      console.log("cccc", value);
       if (value == false) {
         for (let value1 of data.items) {
           value1.checked = true;
@@ -452,9 +488,9 @@ export default {
           <th>Số điện thoại</th>
         </tr>
       </thead> <tbody>`;
-        
+        console.log("deleteArray", deleteArray[0].Customer);
         for (let value of deleteArray) {
-          
+          console.log(value.Customer);
           contentAlert += `<tr>
           <td>${value.Customer.name}</td>
           <td>${value.Customer.email}</td>
@@ -504,7 +540,7 @@ export default {
     });
 
     watch(entryValueStatusTask, (newValue, oldValue) => {
-      
+      // console.log('status', newValue);
       if (newValue != "") {
         data.currentPage = 1;
         reFresh();
@@ -514,6 +550,17 @@ export default {
       }
     });
 
+    // watch(entryValueAge, (newValue, oldValue) => {
+    //   // console.log('Age', newValue);
+    //   if (newValue != "") {
+    //     data.currentPage = 1;
+    //     reFresh();
+    //   } else {
+    //     data.currentPage = 1;
+    //     reFresh();
+    //   }
+    // });
+
     const removeItem = (index) => {
       data.habitAdd = data.habitAdd.filter((value1, index1) => {
         return index1 != index;
@@ -521,7 +568,6 @@ export default {
     };
 
     return {
-      update,
       deleteOne,
       edit,
       handleDelete,
@@ -530,6 +576,7 @@ export default {
       showAddHabit,
       updateEntryValueCustomerType,
       updateEntryValueStatusTask,
+      updateEntryValueAge,
       entryValueCustomerType,
       entryNameCustomerType,
       entryValueStatusTask,
@@ -547,6 +594,8 @@ export default {
       isReadCustomer,
       isCreateCustomer,
       isCreateHabit,
+      entryAgeStatusTask,
+      entryValueAge
     };
   },
 };
@@ -613,7 +662,38 @@ export default {
             style="height: 35px"
           />
         </div>
-        <div class="form-group"></div>
+        <!-- <div class="form-group col-4">
+          <Select
+            :title="`Độ tuổi khách hàng`"
+            :entryValue="entryAgeStatusTask"
+            :options="[
+              {
+                value: '1',
+                name: 'bé hơn 18'
+              },
+              {
+                value: '2',
+                name: 'từ 18 đến 30'
+              },
+              {
+                value: '3',
+                name: 'lớn hơn 30'
+              }
+            ]"
+            @update:entryValue="
+              (value, value1) => (
+                updateEntryValueAge(value),
+                (entryAgeStatusTask = value1.name)
+              )
+            "
+            @refresh="
+              (entryAgeStatusTask = 'Độ tuổi khách hàng'),
+                updateEntryValueAge(''),
+                (data.currentPage = 1)
+            "
+            style="height: 35px"
+          />
+        </div> -->
       </div>
     </div>
     <!-- Search -->
@@ -653,7 +733,6 @@ export default {
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-             
               (data.choseSearch = value),
               (data.currentPage = 1)
             )
@@ -672,6 +751,14 @@ export default {
               _id: 'phone',
               name: 'Tìm kiếm theo số điện thoại',
             },
+            {
+              _id: 'age',
+              name: 'Tìm kiếm theo độ tuổi',
+            },
+            {
+              _id: 'address',
+              name: 'Tìm kiếm theo địa chỉ',
+            },
           ]"
         />
       </div>
@@ -683,6 +770,7 @@ export default {
           data-target="#model-delete-all"
           @click="deleteMany()"
           :disabled="isDeleteCustomer() ? false : true"
+          v-if="false"
         >
           <span id="delete-all" class="mx-2"
             ><span class="size-16">Xoá</span></span
@@ -746,7 +834,7 @@ export default {
       :showActionList="[
         isReadCustomer() ? true : false,
         isEditCustomer() ? true : false,
-        isDeleteCustomer() ? true : false
+        false
       ]"
     />
     <!-- Pagination -->

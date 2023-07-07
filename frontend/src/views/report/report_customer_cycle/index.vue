@@ -101,6 +101,30 @@
       </div>
     </div>
     <!-- Filter -->
+    <div class="border-hr my-3"></div>
+    <!-- Filter -->
+    <div class="d-flex flex-column">
+      <span class="mx-3 mb-3 h6 size-18">Lọc theo thời gian</span>
+      <div class="d-flex mx-3">
+        <div class="form-group w-100">
+          <!-- entryValue = modelValue -->
+          <InputFilter
+            @update:entryValue="(value) => (startDateValue = value)"
+            :title="`Ngày bắt đầu`"
+            :entryValue="`Ngày bắt đầu`"
+            style="height: 35px"
+          />
+        </div>
+        <div class="form-group w-100 ml-3">
+          <InputFilter
+            @update:entryValue="(value) => (endDateValue = value)"
+            :title="`Ngày kết thúc`"
+            :entryValue="`Ngày kết thúc`"
+            style="height: 35px"
+          />
+        </div>
+      </div>
+    </div>
     <!-- Search -->
     <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">
@@ -248,12 +272,6 @@
         <br />
         <span>Bộ phận công tác: ............</span>
       </div>
-      <!-- nameCustomer: item.Customer.name,
-              emailCustomer: item.Customer.email,
-              phoneCustomer: item.Customer.phone,
-              current_position: item.current_position,
-              nameCustomerType: item.Customer.Customer_Type.name,
-              nameCompany: item.Company_KH.name, -->
       <table class="table table-bordered mt-4">
         <thead>
           <tr>
@@ -334,7 +352,7 @@ import {
 } from "../../../use/getSessionItem";
 
 import { isEqual, isBefore, isAfter, isSameDay } from "date-fns";
-
+import InputFilter from '../../../components/form/form_filter_truc.vue'
 import View from "./view.vue";
 
 import jsPDF from "jspdf";
@@ -348,6 +366,7 @@ export default {
     Search,
     View,
     Mail,
+    InputFilter
   },
   setup() {
     const store = reactive({

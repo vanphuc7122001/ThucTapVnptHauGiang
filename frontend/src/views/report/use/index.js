@@ -388,7 +388,7 @@ export const countElementReportLeaderStaff = async () => {
   }
 
   arrayEmployess = arrayEmployess.map((item) => {
-    console.log("leader id", item.leaderId);
+    // console.log("leader id", item.leaderId);
     if (item.leaderId === leaderId) {
       const array = [...item.Employees];
       if (array.length > 0) {

@@ -114,6 +114,7 @@ export default {
     const handleUpdate = async (item) => {
       const rs = await http_update(Customer_Types, item._id, {...item})
       const doc = await http_getOne(Customer_Types, item._id);
+      console.log(doc.document);
       if(rs.error) {
         alert_error('Sửa loại khách hàng', `${rs.msg}`);
         refresh();
@@ -195,6 +196,7 @@ export default {
     </div>
     <!-- Table -->
     <Table
+      :isActiveCheckbox="false"
       :items="data.items"
       :fields="['Tên']"
       :labels="['name']"
@@ -202,8 +204,7 @@ export default {
       @edit="EditEmit"
       :showActionList="[false, 
         isEditCustomer() ? true : false
-      , 
-        isDeleteCustomer() ? true : false
+      ,false
       ]"
       :startRow="1"
     />

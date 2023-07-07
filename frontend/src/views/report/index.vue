@@ -101,9 +101,32 @@
         </router-link>
       </div>
     </div>
+    <div class="border-hr my-3"></div>
     <!-- Filter -->
+    <div class="d-flex flex-column">
+      <span class="mx-3 mb-3 h6 size-18">Lọc theo thời gian</span>
+      <div class="d-flex mx-3">
+        <div class="form-group w-100">
+          <!-- entryValue = modelValue -->
+          <InputFilter
+            @update:entryValue="(value) => (startDateValue = value)"
+            :title="`Ngày bắt đầu`"
+            :entryValue="`Ngày bắt đầu`"
+            style="height: 35px"
+          />
+        </div>
+        <div class="form-group w-100 ml-3">
+          <InputFilter
+            @update:entryValue="(value) => (endDateValue = value)"
+            :title="`Ngày kết thúc`"
+            :entryValue="`Ngày kết thúc`"
+            style="height: 35px"
+          />
+        </div>
+      </div>
+    </div>
     <!-- Search -->
-    <div class="border-hr mb-3"></div>
+    <div class="border-hr my-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">
       <div class="d-flex justify-content-start">
         <Select
@@ -139,9 +162,7 @@
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-              
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -280,7 +301,7 @@
 </template>
 
 <script>
-import { reactive, computed, ref, onBeforeMount } from "vue";
+import { reactive, computed, ref, onBeforeMount, watch } from "vue";
 import Table from "../../components/table/table-report.vue";
 import Mail from "./mail.vue";
 import {
@@ -320,6 +341,7 @@ import {
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import View from "./view.vue";
+import InputFilter from "../../components/form/form_filter_truc.vue";
 
 export default {
   components: {
@@ -329,6 +351,7 @@ export default {
     Search,
     View,
     Mail,
+    InputFilter,
   },
   setup() {
     const store = reactive({
@@ -395,6 +418,9 @@ export default {
       "Loại khách hàng",
     ];
 
+    const startDateValue = ref("");
+    const endDateValue = ref("");
+
     const reFresh = async () => {
       store.countCustomer = await countCustomer();
       store.countEmployee = await countEmployee();
@@ -409,7 +435,6 @@ export default {
       const cusWork = await http_getAll(Customer_Work);
       const tasks = await http_getAll(Task);
 
-  
       data.lengthCustomer = cusWork.documents.length;
       data.items = cusWork.documents.filter((cusWork) => {
         const taskCusCared = cusWork.Customer.Tasks.filter((task) => {
@@ -566,6 +591,7 @@ export default {
       });
 
       // format lại data items
+
       data.items = data.items.map((item) => {
         return {
           nameCustomer: item.Customer.name,
@@ -582,7 +608,49 @@ export default {
           ...item,
         };
       });
+
+      if (startDateValue.value.length > 0) {
+        data.items = data.items.filter(item => {
+          return item.Tasks.filter(task => {
+            return new Date(task.start_date) >= new Date(startDateValue.value) 
+            && new Date(task.start_date) <= new Date(endDateValue.value)
+          }).length > 0;
+        })
+      }
+
+      if (endDateValue.value.length > 0) {
+        data.items = data.items.filter(item => {
+          return item.Tasks.filter(task => {
+            return new Date(task.start_date) >= new Date(startDateValue.value) 
+            && new Date(task.start_date) <= new Date(endDateValue.value)
+          }).length > 0;
+        })
+      }
+
     };
+
+    // Begin watch
+    watch(startDateValue, (newValue, oldValue) => {
+      if (newValue != "") {
+        data.currentPage = 1;
+        reFresh();
+      } else {
+        data.currentPage = 1;
+        reFresh();
+      }
+    });
+
+    watch(endDateValue, (newValue, oldValue) => {
+      if (newValue != "") {
+        data.currentPage = 1;
+        reFresh();
+      } else {
+        data.currentPage = 1;
+        reFresh();
+      }
+    });
+
+    // End watch
 
     // handle update entry value
     const handleUpdateEntryValue = (value) => {
@@ -726,7 +794,6 @@ export default {
       };
 
       data.viewCareCus = item.Customer.Tasks.map((value) => {
-        
         return {
           start_date: formatDate(value.start_date),
           end_date: formatDate(value.end_date),
@@ -772,6 +839,9 @@ export default {
       isReadReportAssinmentStaff,
       isPrintReport,
       isMail,
+      //
+      startDateValue,
+      endDateValue,
     };
   },
 };
