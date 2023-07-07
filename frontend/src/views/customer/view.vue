@@ -21,11 +21,14 @@ export default {
 
     const handleActiveCus = () => {
       isActive.value = !isActive.value;
+      activeInfo.value = false;
     };
+    const activeInfo = ref(true);
 
     return {
       isActive,
       handleActiveCus,
+      activeInfo,
     };
   },
 };
@@ -57,10 +60,11 @@ export default {
             >
               Thông tin cá nhân
             </button>
+
             <div
-              v-if="isActive"
+              v-if="isActive || activeInfo"
               id="personal-info"
-              class="collapse my-2 border-all"
+              class="my-2 border-all"
             >
               <img
                 :src="item.Customer.avatar"
@@ -86,7 +90,13 @@ export default {
                       </p>
                       <p class="mb-0">
                         <span class="font-weight-bold">Giới tính: </span
-                        >{{ item.Customer.gender == 0 ? 'Nam' : item.Customer.gender == 1 ? "Nữ" : 'Chưa cập nhật'  }}
+                        >{{
+                          item.Customer.gender == 0
+                            ? "Nam"
+                            : item.Customer.gender == 1
+                            ? "Nữ"
+                            : "Chưa cập nhật"
+                        }}
                       </p>
                     </div>
                   </div>
@@ -106,7 +116,11 @@ export default {
                       </p>
                       <p class="mb-0">
                         <span class="font-weight-bold">Ghi chú: </span
-                        >{{ item.Customer.note ? item.Customer.note : 'Chưa cập nhật' }}
+                        >{{
+                          item.Customer.note
+                            ? item.Customer.note
+                            : "Chưa cập nhật"
+                        }}
                       </p>
                     </div>
                   </div>

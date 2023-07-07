@@ -64,7 +64,7 @@ export default {
       startRow: 0,
       endRow: 0,
       currentPage: 1,
-      searchText: "",
+      searchText: sessionStorage.getItem("searchCustomer") || "",
       itemAdd: {
         name: "",
         birthdate: "",
@@ -133,7 +133,7 @@ export default {
       eventAdd: {
         name: "",
         content: "",
-        time_duration: 'eventAdd.start_time',
+        time_duration: "eventAdd.start_time",
         start_time: "",
         end_time: "",
         place: "",
@@ -193,7 +193,6 @@ export default {
           );
         });
       }
-
     };
 
     const reFresh1 = async () => {
@@ -246,14 +245,30 @@ export default {
           return [value.Customer.phone].join("").toLocaleLowerCase();
         });
       } else if (data.choseSearch == "age") {
-        return data.items.map( (value, index) => {
-          return [new Date().getFullYear() - new Date(value.Customer.birthday).getFullYear()].join("").toLocaleLowerCase();
-        })
-      } 
-      else if (data.choseSearch == "address") {
+        return data.items.map((value, index) => {
+          return [
+            new Date().getFullYear() -
+              new Date(value.Customer.birthday).getFullYear(),
+          ]
+            .join("")
+            .toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "address") {
         return data.items.map((value, index) => {
           // console.log('Value: ', [value.Customer.birthday].join("").toLocaleLowerCase());
           return [value.Customer.address].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "gender") {
+        return data.items.map((value, index) => {
+          return [
+            value.Customer.gender == 0
+              ? "nam"
+              : value.Customer.gender == 1
+              ? "nữ"
+              : "chưa cập nhật",
+          ]
+            .join("")
+            .toLocaleLowerCase();
         });
       } else {
         return data.items.map((value, index) => {
@@ -262,7 +277,8 @@ export default {
             value.Customer.email,
             value.Customer.phone,
             value.Customer.address,
-            new Date().getFullYear() - new Date(value.Customer.birthday).getFullYear()
+            new Date().getFullYear() -
+              new Date(value.Customer.birthday).getFullYear(),
           ]
             .join("")
             .toLocaleLowerCase();
@@ -305,8 +321,7 @@ export default {
       } else return data.items.value;
     });
     // methods
-    const deleteOne = (_id) => {
-    };
+    const deleteOne = (_id) => {};
 
     // watch
     const activeMenu = ref(1);
@@ -343,10 +358,10 @@ export default {
           birthday: formatDate(item.Customer.birthday),
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
-          email: item.Customer.email ? item.Customer.email : 'Chưa cập nhật',
+          email: item.Customer.email ? item.Customer.email : "Chưa cập nhật",
           address: item.Customer.address,
           gender: item.Customer.gender,
-          note: item.Customer.note
+          note: item.Customer.note,
         },
         Customer_Type: {
           _id: item.Customer.Customer_Type._id,
@@ -386,7 +401,7 @@ export default {
           name: item.name,
           time_duration: formatDateTime_2(item.time_duration),
           content: item.content,
-          place: item.place != null ? item.place : 'không có'
+          place: item.place != null ? item.place : "không có",
         };
       });
     };
@@ -404,7 +419,7 @@ export default {
           birthday: item.Customer.birthday,
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
-          email: item.Customer.email ? item.Customer.email : 'Chưa cập nhật',
+          email: item.Customer.email ? item.Customer.email : "Chưa cập nhật",
           address: item.Customer.address,
           gender: item.Customer.gender,
         },
@@ -431,9 +446,8 @@ export default {
     };
 
     const updateEntryValueAge = (value) => {
-      entryValueAge.value = value
+      entryValueAge.value = value;
     };
-
 
     const updateEntryValueStatusTask = (value) => {
       entryValueStatusTask.value = value;
@@ -574,7 +588,7 @@ export default {
       isCreateCustomer,
       isCreateHabit,
       entryAgeStatusTask,
-      entryValueAge
+      entryValueAge,
     };
   },
 };
@@ -712,8 +726,7 @@ export default {
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -737,6 +750,10 @@ export default {
             {
               _id: 'address',
               name: 'Tìm kiếm theo địa chỉ',
+            },
+            {
+              _id: 'gender',
+              name: 'Tìm kiếm theo giới tính',
             },
           ]"
         />
@@ -813,7 +830,7 @@ export default {
       :showActionList="[
         isReadCustomer() ? true : false,
         isEditCustomer() ? true : false,
-        false
+        false,
       ]"
     />
     <!-- Pagination -->

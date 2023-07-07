@@ -24,7 +24,7 @@
         class="mx-1 report__item"
         :style="data.activeMenu == 1 ? { border: '1px solid blue' } : {}"
       >
-                <!-- to="/report_assignment_staff" -->
+        <!-- to="/report_assignment_staff" -->
         <router-link
           :to="!isReadReportAssinmentStaff() ? '#' : '/report_assignment_staff'"
           :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
@@ -34,7 +34,9 @@
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
             <span class="text-center"
-              >{{ store.countReportAssignmentStaff }}/{{ store.countCustomer }}</span
+              >{{ store.countReportAssignmentStaff }}/{{
+                store.countCustomer
+              }}</span
             >
           </span>
         </router-link>
@@ -53,7 +55,9 @@
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
             <span class="text-center"
-              >{{ store.countReportCustomerCycle }}/{{ store.countCustomer }}</span
+              >{{ store.countReportCustomerCycle }}/{{
+                store.countCustomer
+              }}</span
             >
           </span>
         </router-link>
@@ -156,9 +160,7 @@
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-              
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -225,7 +227,7 @@
       class="mx-3"
     />
 
-    <div class="container pdf-content" v-show="true" ref="pdfContent">
+    <div class="container pdf-content" v-show="true" ref="pdfContentRef">
       <img
         src="../../../../assets/images/vnpt-logo1.png"
         class="rounded-circle"
@@ -333,9 +335,9 @@ import {
   isReadReportCustomerCycle,
   isReadReportAssinmentStaff,
   isPrintReport,
-  isMail
-} from '../../../../use/getSessionItem'
-import InputFilter from '../../../../components/form/form_filter_truc.vue'
+  isMail,
+} from "../../../../use/getSessionItem";
+import InputFilter from "../../../../components/form/form_filter_truc.vue";
 export default {
   components: {
     Table,
@@ -344,7 +346,7 @@ export default {
     Search,
     View,
     Mail,
-    InputFilter
+    InputFilter,
   },
   setup() {
     const store = reactive({
@@ -417,12 +419,11 @@ export default {
       const staffArray = [];
       for (const _id of ListTaskId) {
         const rs = await http_getOne(Task, _id);
-        staffArray.push(rs)
+        staffArray.push(rs);
         // data.items.push(rs);
       }
 
-      data.items = [...staffArray]
-      
+      data.items = [...staffArray];
 
       data.items = data.items.map((task) => {
         if (task.leaderId == leaderId) {
@@ -458,7 +459,6 @@ export default {
 
     // computed
     const toString = computed(() => {
-      
       if (data.choseSearch == "name") {
         return data.items.map((value, index) => {
           return [value.name].join("").toLocaleLowerCase();
@@ -524,48 +524,18 @@ export default {
       data.searchText = value;
     };
 
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+    const pdfContentRef = ref(null);
+    const handlePrintReport = () => {
+      const printContent = pdfContentRef.value;
+      const originalContents = document.body.innerHTML;
 
-      if (pdfContent.value) {
-        const content = pdfContent.value;
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
 
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-
-          const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let yPosition = 10; // Đặt lề trên là 10px
-          let contentRemainingHeight = imgHeight;
-          let pageNumber = 1;
-
-          while (contentRemainingHeight > 0) {
-            if (pageNumber > 1) {
-              doc.addPage();
-            }
-
-            doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
-
-            contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
-            if (contentRemainingHeight > 0) {
-              yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
-            } else {
-              yPosition = 10; // Reset lề trên cho trang tiếp theo
-            }
-
-            pageNumber++;
-          }
-
-          doc.save("BaoCaoNhanVienDoLanhDaoPhuTrach.pdf");
-        });
-      }
+      document.body.innerHTML = originalContents;
     };
 
     const view = (item) => {
-  
       data.viewValue = {
         ...item,
       };
@@ -577,7 +547,7 @@ export default {
       setPages,
       handleUpdateSearchText,
       handlePrintReport,
-      pdfContent,
+      pdfContentRef,
       view,
       store,
       isReadReport,
@@ -586,7 +556,7 @@ export default {
       isReadReportCustomerCycle,
       isReadReportAssinmentStaff,
       isPrintReport,
-      isMail
+      isMail,
     };
   },
 };

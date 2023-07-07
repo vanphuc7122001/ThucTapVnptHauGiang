@@ -49,11 +49,12 @@ export default {
       selectedItem: {},
       TaskLD: [],
       TaskLDE: [],
+      customerCycle: [],
     });
 
     // const emit = inject('emit');
     const updateMenuResponsive = () => {
-   
+      console.log("starting");
       ctx.emit("updateMenuResponsive", "true");
     };
     const hasNotification = ref(false);
@@ -133,6 +134,71 @@ export default {
       }
     };
 
+    socket.on("notiEveryDay", async () => {
+      const _idEmployee = sessionStorage.getItem("employeeId");
+      const _nameEmployee = sessionStorage.getItem("employeeName");
+      ///Birthday
+      data.customerCycle = await http_getAll(taskService);
+      var uniqueTasks = {};
+
+      for (var i = 0; i < data.customerCycle.length; i++) {
+        var task = data.customerCycle[i];
+        var customer = task["customerId"];
+
+        if (uniqueTasks.hasOwnProperty(customer)) {
+          var existingTask = uniqueTasks[customer];
+          var existingStartDate = new Date(existingTask["start_date"]);
+          var currentStartDate = new Date(task["start_date"]);
+
+          if (currentStartDate > existingStartDate) {
+            uniqueTasks[customer] = task;
+          }
+        } else {
+          uniqueTasks[customer] = task;
+        }
+      }
+
+      data.customerCycle = Object.values(uniqueTasks);
+
+      for (var i = 0; i < data.customerCycle.length; i++) {
+        var equal = 0;
+        var task = data.customerCycle[i];
+
+        if (task.EmployeesList) {
+          equal = task.EmployeesList.filter(
+            (employee) => employee.EmployeeId === _idEmployee
+          ).length;
+
+          if (equal !== 0) {
+            const employees = await http_getOne(employeeService, _idEmployee);
+            if (employees.Tasks != null) {
+              const Tasks = employees.Tasks;
+              Tasks.map((value, index) => {
+                if (value._id === task._id)
+                  data.customers.push(value.Customers);
+              });
+              socket.emit(
+                "birthday",
+                data.customers,
+                _idEmployee,
+                _nameEmployee
+              );
+            }
+          }
+        }
+      }
+      ///Cycle and Late
+      const TasksLD = await http_getAll(taskService);
+      for (const value of TasksLD) {
+        const TasksLDE = await http_getOne(taskService, value._id);
+        if (_idEmployee == value.leaderId) {
+          data.TaskLD.push(TasksLDE);
+        }
+      }
+      socket.emit("cycleCus", data.TaskLD);
+      socket.emit("lateCus", data.TaskLD);
+    });
+
     const token = sessionStorage.getItem("token");
     const check = async (token) => {
       if (token) {
@@ -157,24 +223,6 @@ export default {
             }
           }
         });
-        const employees = await http_getOne(employeeService, _idEmployee);
-        if (employees.Tasks != null) {
-          const Tasks = employees.Tasks;
-          Tasks.map((value, index) => {
-            data.customers.push(value.Customers);
-          });
-          socket.emit("birthday", data.customers, _idEmployee, _nameEmployee);
-        }
-
-        const TasksLD = await http_getAll(taskService);
-        for (const value of TasksLD) {
-          const TasksLDE = await http_getOne(taskService, value._id);
-          if (_idEmployee == value.leaderId) {
-            data.TaskLD.push(TasksLDE);
-          }
-        }
-        socket.emit("cycleCus", data.TaskLD);
-        socket.emit("lateCus", data.TaskLD);
       }
     };
 
@@ -197,12 +245,12 @@ export default {
     onMounted(async () => {
       const _idEmployee = sessionStorage.getItem("employeeId");
       data.Notice = await notificationService.get(_idEmployee);
-      
+      console.log("Tên thông báo", data.Notice);
       count.value = 0;
       for (const value of data.Notice.documents) {
         if (value.isRead == false) {
           count.value++;
-          
+          console.log("count value", count.value);
         }
       }
       // alert_info(`Chi Tiết Thông Báo`, `aca`)

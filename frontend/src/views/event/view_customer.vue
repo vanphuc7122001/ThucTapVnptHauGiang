@@ -31,11 +31,12 @@ import {
   Customer_Types,
   Status_Task,
   Customer_Event,
-  alert_mail
+  alert_mail,
 } from "../common/import";
 
+import { useRouter } from "vue-router";
 
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 export default {
   components: {
     Table,
@@ -160,7 +161,6 @@ export default {
       data.items = data.items.filter((value, index) => {
         return (
           props.customer_event.some((value1, index1) => {
-           
             return value1._id.toString() == value.Customer._id;
           }) == true
         );
@@ -345,8 +345,9 @@ export default {
     const refresh_customer = () => {
       reFresh();
     };
-
+    const router = useRouter();
     const view = (item) => {
+      // router.push({ name: "Customer.view", params: { id: _id } });
       data.viewValue = {
         Customer: {
           _id: item.Customer._id,
@@ -468,7 +469,7 @@ export default {
           <th>Số điện thoại</th>
         </tr>
       </thead> <tbody>`;
-      
+
         for (let value of deleteArray) {
           // console.log(value.Customer);
           contentAlert += `<tr>
@@ -572,13 +573,26 @@ export default {
     });
 
     const handleSendMail = () => {
-      const newArray = []
+      const newArray = [];
       data.items.map((value, index) => {
-          if( value.checked == true){
-            newArray.push(value.Customer.email)
-          }
+        if (value.checked == true) {
+          newArray.push(value.Customer.email);
+        }
       });
-      alert_mail(newArray)
+      alert_mail(newArray);
+    };
+
+    const goToPageBAndReloadPageB = (data) => {
+      router.push("Customer");
+      sessionStorage.setItem(
+        "activeMenu",
+        sessionStorage.getItem("activeMenu") - 1
+      );
+      console.log(data.Customer.name);
+      sessionStorage.setItem("searchCustomer", data.Customer.name);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     };
 
     return {
@@ -604,6 +618,7 @@ export default {
       isStringFound,
       selectRef,
       handleSendMail,
+      goToPageBAndReloadPageB,
     };
   },
 };
@@ -697,9 +712,7 @@ export default {
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-          
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -747,7 +760,7 @@ export default {
       @selectAll="(value) => handleSelectAll(value)"
       @delete="handleDelete"
       @edit="edit"
-      @view="view"
+      @view="(value) => goToPageBAndReloadPageB(value)"
     />
     <!-- Pagination -->
     <Pagination

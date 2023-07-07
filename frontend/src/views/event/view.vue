@@ -25,7 +25,7 @@ export default {
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title" style="font-size: 18px">
-            Thông tin chi tiết sự kiện 
+            Thông tin chi tiết sự kiện
           </h4>
           <button type="button" class="close" data-dismiss="modal">
             &times;
@@ -95,9 +95,7 @@ export default {
               </div>
             </div>
             <div class="form-group">
-              <label for="content"
-                >Địa điểm:</label
-              >
+              <label for="content">Địa điểm:</label>
               <textarea
                 id="content"
                 disabled
@@ -109,7 +107,10 @@ export default {
           </form>
           <div class="form-group">
             <label for="duration">Danh sách khách hàng tham gia sự kiện:</label>
-            <Table_Customer :customer_event="item.Customers" />
+            <Table_Customer
+              :customer_event="item.Customers"
+              @close="$emit('close', false)"
+            />
           </div>
           <div class="mt-2"></div>
         </div>

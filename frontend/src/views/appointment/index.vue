@@ -9,6 +9,7 @@ import SelectFilter from "../../components/form/select_task_truc.vue";
 import InputFilter from "../../components/form/form_filter_truc.vue";
 import Add from "../appointment/add.vue";
 import Edit from "./edit.vue";
+import EditStatusApp from "./edit_statusapp.vue";
 import View from "./view.vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import Swal from "sweetalert2";
@@ -61,10 +62,11 @@ export default {
     Add,
     Edit,
     View,
+    EditStatusApp,
   },
   setup(ctx) {
-    const rs = isReadAppointment()
-    
+    const rs = isReadAppointment();
+
     const data = reactive({
       items: [
         {
@@ -88,6 +90,7 @@ export default {
       currentPage: 1,
       searchText: "",
       activeEdit: false,
+      activeEditStatus: false,
       selectAll: [
         {
           checked: false,
@@ -160,7 +163,6 @@ export default {
     const arrayCheck = reactive({ data: [] });
     // computed
     const toString = computed(() => {
-     
       if (data.choseSearch == "status") {
         return data.items.map((value, index) => {
           return [value.Status_App.name].join("").toLocaleLowerCase();
@@ -224,11 +226,10 @@ export default {
         return;
       } else {
         data.items = data.items.filter((value, index) => {
-          
           return value.Status_App._id == entryValueStatus.value;
         });
       }
-      
+
       for (let value of data.items) {
         if (value.note == null || value.note.length == 0) {
           value.note = "không có";
@@ -241,7 +242,6 @@ export default {
       }
       for (let value of data.items) {
         for (let array of arrayCheck.data) {
-          
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -254,7 +254,6 @@ export default {
 
     // // methods
     const create = async () => {
-      
       await refresh();
     };
 
@@ -269,12 +268,11 @@ export default {
     };
 
     const edit = async (editValue) => {
-      
       data.resetDataEdit = false;
-   
+
       editValue.loginId = sessionStorage.getItem("employeeId");
       const result = await http_update(Appointment, editValue._id, editValue);
-    
+
       if (!result.error) {
         alert_success(`Sửa lịch hẹn`, `${result.msg}`);
         refresh();
@@ -283,13 +281,27 @@ export default {
       }
     };
 
+    // const editStatus = async (editValue) => {
+    //   data.resetDataEdit = false;
+
+    //   editValue.loginId = sessionStorage.getItem("employeeId");
+    //   const result = await http_update(Appointment, editValue._id, editValue);
+
+    //   if (!result.error) {
+    //     alert_success(`Sửa lịch hẹn`, `${result.msg}`);
+    //     refresh();
+    //   } else if (result.error) {
+    //     alert_error(`Sửa lịch hẹn`, `${result.msg}`);
+    //   }
+    // };
+
     const refresh = async () => {
       // data.evaluate = await http_getAll(Evaluate);
       data.customer = await http_getOne(Task, params);
       data.task = await http_getOne(Task, params);
       data.customer = data.customer.Customer.name;
       data.items = await Appointment.findAllAppointment(params);
-      
+
       status_apps.status_app = await http_getAll(Status_App);
 
       for (let value of data.items) {
@@ -297,7 +309,7 @@ export default {
           value.note = "không có";
         } else value.note = value.note;
       }
-      
+
       for (const value of data.items) {
         value.date_time_format = formatDateTime(value.date_time);
       }
@@ -319,7 +331,6 @@ export default {
       }
       for (let value of data.items) {
         for (let array of arrayCheck.data) {
-          
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -346,23 +357,20 @@ export default {
           }
         }
       }
-     
     };
     const handleSelectOne = (id, item) => {
       if (item.checked == false) {
         arrayCheck.data.push(item);
       } else {
         arrayCheck.data = arrayCheck.data.filter((value, index) => {
-      
           return value._id != id;
         });
       }
-      
+
       data.selectAll[0].checked = false;
     };
 
     const handleDelete = async (id, item) => {
-      
       const isConfirmed = await alert_delete(
         "Xóa",
         `Bạn có chắc là xóa lịch hẹn ${item.date_time_format} không!!`
@@ -373,7 +381,7 @@ export default {
         loginId.id = id;
         // 1***** xem thay đổi Appoiment cho phù hợp
         const rsAppointment = await Appointment.deleteOne(id, loginId);
-        
+
         if (rsAppointment.error) {
           alert_error("Lỗi ", rsAppointment.msg);
         } else {
@@ -383,14 +391,12 @@ export default {
             `Xóa lịch hẹn ngày ${formatDateTime(
               rsAppointment.document.date_time.toUpperCase()
             )} với khách hàng  ${data.customer}`
-
           );
         }
       }
     };
     //XÓA NHIỀU
     const deleteMany = async () => {
-      
       try {
         //Mảng lịch hẹn sẽ xóa
         if (arrayCheck.data.length == 0) {
@@ -414,7 +420,7 @@ export default {
           for (const value of data.items) {
             value.date_time_format = formatDateTime(value.date_time);
           }
-          
+
           contentAlert += `<tr>
             <td>${value.date_time_format}</td>
             <td>${value.content}</td>
@@ -557,9 +563,7 @@ export default {
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-              
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -621,6 +625,11 @@ export default {
           (data.editValue.date_time = data.editValue.date_time.toUpperCase())
         )
       "
+      @editStatus="
+        (value, value1) => (
+          (data.editValue = value), (data.activeEditStatus = value1)
+        )
+      "
       :showActionList="[
         isEditAppointment() ? true : false,
         isDeleteAppointment() ? true : false,
@@ -640,6 +649,12 @@ export default {
       :item="data.editValue"
       :class="[data.activeEdit ? 'show-modal' : 'd-none']"
       @cancel="data.activeEdit = false"
+      @edit="edit(data.editValue)"
+    />
+    <EditStatusApp
+      :item="data.editValue"
+      :class="[data.activeEditStatus ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEditStatus = false"
       @edit="edit(data.editValue)"
     />
   </div>

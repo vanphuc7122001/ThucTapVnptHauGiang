@@ -239,7 +239,7 @@
       class="mx-3"
     />
 
-    <div class="container pdf-content" ref="pdfContent">
+    <div class="container pdf-content" ref="pdfContentRef">
       <img
         src="../../assets/images/vnpt-logo1.png"
         class="rounded-circle"
@@ -610,25 +610,40 @@ export default {
       });
 
       if (startDateValue.value.length > 0) {
-        data.items = data.items.filter(item => {
-          return item.Tasks.filter(task => {
-            return new Date(task.start_date).getTime() === new Date(startDateValue.value).getTime() || (new Date(task.start_date).getTime() >= new Date(startDateValue.value).getTime() 
-            && new Date(task.start_date).getTime() <= new Date(endDateValue.value).getTime());
-          }).length > 0;
-        })
+        data.items = data.items.filter((item) => {
+          return (
+            item.Tasks.filter((task) => {
+              return (
+                new Date(task.start_date).getTime() ===
+                  new Date(startDateValue.value).getTime() ||
+                (new Date(task.start_date).getTime() >=
+                  new Date(startDateValue.value).getTime() &&
+                  new Date(task.start_date).getTime() <=
+                    new Date(endDateValue.value).getTime())
+              );
+            }).length > 0
+          );
+        });
 
         // console.log('Rs', rs);
       }
 
       if (endDateValue.value.length > 0) {
-        data.items = data.items.filter(item => {
-          return item.Tasks.filter(task => {
-            return new Date(task.end_date).toLocaleDateString() === new Date(endDateValue.value).toLocaleDateString() || (new Date(task.start_date).getTime() >= new Date(startDateValue.value).getTime() 
-            && new Date(task.start_date).getTime() <= new Date(endDateValue.value).getTime());
-          }).length > 0;
-        })
+        data.items = data.items.filter((item) => {
+          return (
+            item.Tasks.filter((task) => {
+              return (
+                new Date(task.end_date).toLocaleDateString() ===
+                  new Date(endDateValue.value).toLocaleDateString() ||
+                (new Date(task.start_date).getTime() >=
+                  new Date(startDateValue.value).getTime() &&
+                  new Date(task.start_date).getTime() <=
+                    new Date(endDateValue.value).getTime())
+              );
+            }).length > 0
+          );
+        });
       }
-
     };
 
     // Begin watch
@@ -724,44 +739,19 @@ export default {
     });
 
     // handle print data
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+    const pdfContentRef = ref(null);
+    const handlePrintReport = () => {
+      const printContent = pdfContentRef.value;
+      const originalContents = document.body.innerHTML;
 
-      if (pdfContent.value) {
-        const content = pdfContent.value;
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
 
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
+      document.body.innerHTML = originalContents;
+    };
 
-          const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let yPosition = 10; // Đặt lề trên là 10px
-          let contentRemainingHeight = imgHeight;
-          let pageNumber = 1;
-
-          while (contentRemainingHeight > 0) {
-            if (pageNumber > 1) {
-              doc.addPage();
-            }
-
-            doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
-
-            contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
-            if (contentRemainingHeight > 0) {
-              yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
-            } else {
-              yPosition = 10; // Reset lề trên cho trang tiếp theo
-            }
-
-            pageNumber++;
-          }
-
-          doc.save("BaoCaoDanhSachKhachHangLauChuaChamSoc.pdf");
-        });
-      }
+    const isPrintReport = () => {
+      return true;
     };
 
     const view = (item) => {
@@ -772,10 +762,15 @@ export default {
           birthday: formatDate(item.Customer.birthday),
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
-          email: item.Customer.email ? item.Customer.email : 'Chưa cập nhật',
+          email: item.Customer.email ? item.Customer.email : "Chưa cập nhật",
           address: item.Customer.address,
-          gender: item.Customer.gender == 0 ? 'Nam' : item.Customer.gender == 1 ? 'Nữ' : 'Chưa cập nhật',
-          note : item.Customer.note ? item.Customer.note : 'Chưa cập nhật'
+          gender:
+            item.Customer.gender == 0
+              ? "Nam"
+              : item.Customer.gender == 1
+              ? "Nữ"
+              : "Chưa cập nhật",
+          note: item.Customer.note ? item.Customer.note : "Chưa cập nhật",
         },
         Customer_Type: {
           _id: item.Customer.Customer_Type._id,
@@ -831,7 +826,7 @@ export default {
       handleUpdateEntryValue,
       handleUpdateSearchText,
       handlePrintReport,
-      pdfContent,
+      pdfContentRef,
       view,
       labels,
       store,

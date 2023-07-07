@@ -371,7 +371,7 @@ export default {
                         for="inlineRadio2"
                         style="color: black"
                       >
-                        Nử
+                        Nữ
                       </label>
                     </div>
                   </div>

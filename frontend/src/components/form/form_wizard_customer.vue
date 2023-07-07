@@ -377,7 +377,7 @@ export default {
                   </div>
                   <div class="form-group">
                     <label for="">Giới tính</label>
-                    <br>
+                    <br />
                     <div class="form-check form-check-inline">
                       <input
                         class="form-check-input"
@@ -385,7 +385,10 @@ export default {
                         value="0"
                         v-model="viewData.customerInfo.gender"
                       />
-                      <label class="form-check-label" for="inlineRadio1" style="color: black"
+                      <label
+                        class="form-check-label"
+                        for="inlineRadio1"
+                        style="color: black"
                         >Nam</label
                       >
                     </div>
@@ -396,8 +399,11 @@ export default {
                         value="1"
                         v-model="viewData.customerInfo.gender"
                       />
-                      <label class="form-check-label" for="inlineRadio2" style="color: black"
-                        >Nử</label
+                      <label
+                        class="form-check-label"
+                        for="inlineRadio2"
+                        style="color: black"
+                        >Nữ</label
                       >
                     </div>
                   </div>

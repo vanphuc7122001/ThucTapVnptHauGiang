@@ -46,7 +46,6 @@ export default {
     const selectRef = ref(null);
 
     const handleClickOutside = (event) => {
-  
       if (!selectRef.value.contains(event.target)) {
         data._showAction = -1;
       }
@@ -160,7 +159,7 @@ export default {
                   type="button"
                   class="mx-2 format-btn"
                   data-toggle="modal"
-                  data-target="#model-form-wizard"
+                  data-target="#model-edit"
                   v-if="showActionList[1] == true"
                 >
                   <span
@@ -214,6 +213,21 @@ export default {
                     autorenew
                   </span>
                 </button>
+
+                <button
+                  type="button"
+                  class="mx-2 format-btn"
+                  data-toggle="modal"
+                  data-target="#modal-edit-statustask"
+                >
+                  <span
+                    class="material-symbols-outlined d-flex align-content-center"
+                    id="edit_status"
+                    @click="$emit('editStatus', item, true)"
+                  >
+                    task_alt
+                  </span>
+                </button>
               </div>
             </div>
           </td>
@@ -253,6 +267,7 @@ export default {
   font-size: 13px;
 }
 
+#edit_status,
 #view,
 #edit,
 #delete,
@@ -272,7 +287,9 @@ export default {
 #delete:hover {
   color: var(--red);
 }
-
+/* #edit_status:hover {
+  color: green;
+} */
 .takingCare {
   color: green;
 }

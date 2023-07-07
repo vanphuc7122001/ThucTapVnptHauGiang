@@ -162,9 +162,7 @@
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-             
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -241,7 +239,7 @@
       class="mx-3"
     />
 
-    <div class="container pdf-content" ref="pdfContent">
+    <div class="container pdf-content" ref="pdfContentRef">
       <img
         src="../../../assets/images/vnpt-logo1.png"
         class="rounded-circle"
@@ -352,7 +350,7 @@ import {
 } from "../../../use/getSessionItem";
 
 import { isEqual, isBefore, isAfter, isSameDay } from "date-fns";
-import InputFilter from '../../../components/form/form_filter_truc.vue'
+import InputFilter from "../../../components/form/form_filter_truc.vue";
 import View from "./view.vue";
 
 import jsPDF from "jspdf";
@@ -366,7 +364,7 @@ export default {
     Search,
     View,
     Mail,
-    InputFilter
+    InputFilter,
   },
   setup() {
     const store = reactive({
@@ -522,8 +520,6 @@ export default {
                 end_day.getDate();
             }
 
-            
-
             task.dayStartNewCycle = dayStartNewCycle;
             return task;
           }
@@ -531,7 +527,7 @@ export default {
 
         const rsTaskCusCared = taskCusCared.filter((value, index) => {
           let dayStartNewCycle = new Date(value.dayStartNewCycle);
-         
+
           let currentDay = new Date();
           if (value.customerId == cusWork.Customer._id) {
             return cusWork.Customer.Tasks.filter((task) => {
@@ -542,7 +538,6 @@ export default {
                 !isEqual(dayStartNewCycle, start_date) &&
                 task.Status_Task.name == "đã chăm sóc"
               ) {
-                
                 return task;
               }
             });
@@ -567,7 +562,6 @@ export default {
             return taskCusCared;
           });
 
-  
           if (filteredTasks.length > 0) {
             return filteredTasks;
           }
@@ -593,23 +587,39 @@ export default {
       });
 
       if (startDateValue.value.length > 0) {
-        data.items = data.items.filter(item => {
-          return item.Tasks.filter(task => {
-            return new Date(task.start_date).getTime() === new Date(startDateValue.value).getTime() || (new Date(task.start_date).getTime() >= new Date(startDateValue.value).getTime() 
-            && new Date(task.start_date).getTime() <= new Date(endDateValue.value).getTime());
-          }).length > 0;
-        })
+        data.items = data.items.filter((item) => {
+          return (
+            item.Tasks.filter((task) => {
+              return (
+                new Date(task.start_date).getTime() ===
+                  new Date(startDateValue.value).getTime() ||
+                (new Date(task.start_date).getTime() >=
+                  new Date(startDateValue.value).getTime() &&
+                  new Date(task.start_date).getTime() <=
+                    new Date(endDateValue.value).getTime())
+              );
+            }).length > 0
+          );
+        });
 
         // console.log('Rs', rs);
       }
 
       if (endDateValue.value.length > 0) {
-        data.items = data.items.filter(item => {
-          return item.Tasks.filter(task => {
-            return new Date(task.end_date).toLocaleDateString() === new Date(endDateValue.value).toLocaleDateString() || (new Date(task.start_date).getTime() >= new Date(startDateValue.value).getTime() 
-            && new Date(task.start_date).getTime() <= new Date(endDateValue.value).getTime());
-          }).length > 0;
-        })
+        data.items = data.items.filter((item) => {
+          return (
+            item.Tasks.filter((task) => {
+              return (
+                new Date(task.end_date).toLocaleDateString() ===
+                  new Date(endDateValue.value).toLocaleDateString() ||
+                (new Date(task.start_date).getTime() >=
+                  new Date(startDateValue.value).getTime() &&
+                  new Date(task.start_date).getTime() <=
+                    new Date(endDateValue.value).getTime())
+              );
+            }).length > 0
+          );
+        });
       }
     };
 
@@ -647,7 +657,6 @@ export default {
     };
     // // handle pagination
     const toString = computed(() => {
-    
       if (data.choseSearch == "name") {
         return data.items.map((value, index) => {
           return [value.Customer.name].join("").toLocaleLowerCase();
@@ -709,44 +718,15 @@ export default {
     });
 
     // handle print data
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+    const pdfContentRef = ref(null);
+    const handlePrintReport = () => {
+      const printContent = pdfContentRef.value;
+      const originalContents = document.body.innerHTML;
 
-      if (pdfContent.value) {
-        const content = pdfContent.value;
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
 
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-
-          const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let yPosition = 10; // Đặt lề trên là 10px
-          let contentRemainingHeight = imgHeight;
-          let pageNumber = 1;
-
-          while (contentRemainingHeight > 0) {
-            if (pageNumber > 1) {
-              doc.addPage();
-            }
-
-            doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
-
-            contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
-            if (contentRemainingHeight > 0) {
-              yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
-            } else {
-              yPosition = 10; // Reset lề trên cho trang tiếp theo
-            }
-
-            pageNumber++;
-          }
-
-          doc.save("BaoCaoDanhSachKhachHangToiChuKyNhungChuaChamSoc.pdf");
-        });
-      }
+      document.body.innerHTML = originalContents;
     };
 
     const view = (item) => {
@@ -757,10 +737,15 @@ export default {
           birthday: formatDate(item.Customer.birthday),
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
-          email: item.Customer.email ? item.Customer.email : 'Chưa cập nhật',
+          email: item.Customer.email ? item.Customer.email : "Chưa cập nhật",
           address: item.Customer.address,
-          gender: item.Customer.gender == 0 ? 'Nam' : item.Customer.gender == 1 ? 'Nữ' : 'Chưa cập nhật',
-          note: item.Customer.note ? item.Customer.note : "Chưa cập nhật"
+          gender:
+            item.Customer.gender == 0
+              ? "Nam"
+              : item.Customer.gender == 1
+              ? "Nữ"
+              : "Chưa cập nhật",
+          note: item.Customer.note ? item.Customer.note : "Chưa cập nhật",
         },
         Customer_Type: {
           _id: item.Customer.Customer_Type._id,
@@ -783,7 +768,6 @@ export default {
       };
 
       data.viewCareCus = item.Customer.Tasks.map((value) => {
-   
         return {
           start_date: formatDate(value.start_date),
           end_date: formatDate(value.end_date),
@@ -816,7 +800,7 @@ export default {
       handleUpdateEntryValue,
       handleUpdateSearchText,
       handlePrintReport,
-      pdfContent,
+      pdfContentRef,
       view,
       store,
       isReadReport,

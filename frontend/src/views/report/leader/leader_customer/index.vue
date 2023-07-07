@@ -24,7 +24,7 @@
         class="mx-1 report__item"
         :style="data.activeMenu == 1 ? { border: '1px solid blue' } : {}"
       >
-                <!-- to="/report_assignment_staff" -->
+        <!-- to="/report_assignment_staff" -->
         <router-link
           :to="!isReadReportAssinmentStaff() ? '#' : '/report_assignment_staff'"
           :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
@@ -34,7 +34,9 @@
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
             <span class="text-center"
-              >{{ store.countReportAssignmentStaff }}/{{ store.countCustomer }}</span
+              >{{ store.countReportAssignmentStaff }}/{{
+                store.countCustomer
+              }}</span
             >
           </span>
         </router-link>
@@ -53,7 +55,9 @@
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
             <span class="text-center"
-              >{{ store.countReportCustomerCycle }}/{{ store.countCustomer }}</span
+              >{{ store.countReportCustomerCycle }}/{{
+                store.countCustomer
+              }}</span
             >
           </span>
         </router-link>
@@ -158,9 +162,7 @@
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-             
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -199,7 +201,7 @@
         </button>
       </div>
     </div>
-    
+
     <Table
       :items="setPages"
       :fields="[
@@ -234,7 +236,7 @@
       class="mx-3"
     />
 
-    <div class="container pdf-content" ref="pdfContent">
+    <div class="container pdf-content" ref="pdfContentRef">
       <img
         src="../../../../assets/images/vnpt-logo1.png"
         class="rounded-circle"
@@ -300,7 +302,11 @@
         <p>Người Báo Cáo</p>
       </div>
     </div>
-    <View :item="data.viewValue" :Events="data.Events" :viewCareCus="data.viewCareCus" />
+    <View
+      :item="data.viewValue"
+      :Events="data.Events"
+      :viewCareCus="data.viewCareCus"
+    />
     <Mail />
   </div>
 </template>
@@ -343,10 +349,10 @@ import {
   isReadReportCustomerCycle,
   isReadReportAssinmentStaff,
   isPrintReport,
-  isMail
-} from '../../../../use/getSessionItem'
+  isMail,
+} from "../../../../use/getSessionItem";
 
-import InputFilter from '../../../../components/form/form_filter_truc.vue'
+import InputFilter from "../../../../components/form/form_filter_truc.vue";
 
 export default {
   components: {
@@ -356,7 +362,7 @@ export default {
     Search,
     View,
     Mail,
-    InputFilter
+    InputFilter,
   },
   setup() {
     const store = reactive({
@@ -414,8 +420,10 @@ export default {
       store.countCustomer = await countCustomer();
       store.countEmployee = await countEmployee();
       store.countReport = await countElementReportPage();
-      store.countReportAssignmentStaff = await countElementReportAssignmentStaff();
-      store.countReportCustomerCycle = await countElementReportCustomerCyclePage();
+      store.countReportAssignmentStaff =
+        await countElementReportAssignmentStaff();
+      store.countReportCustomerCycle =
+        await countElementReportCustomerCyclePage();
       store.countLeaderCustomer = await countElementReportLeaderCustomer();
       store.countleaderStaff = await countElementReportLeaderStaff();
 
@@ -426,38 +434,50 @@ export default {
         ListTaskId.push(task._id);
       });
 
-
-      const customerArray = []
+      const customerArray = [];
       for (const _id of ListTaskId) {
         const rs = await http_getOne(Task, _id);
-        customerArray.push(rs)
+        customerArray.push(rs);
         // data.items.push(rs);
       }
 
-      data.items = [...customerArray]
+      data.items = [...customerArray];
 
       data.items = data.items.filter((item, index, self) => {
         return (
           item.leaderId == leaderId &&
           index ===
-            self.findIndex((customer) => customer.Customer._id === item.customerId)
+            self.findIndex(
+              (customer) => customer.Customer._id === item.customerId
+            )
         );
       });
 
-
       // begin filter
-      if(startDateValue.value.length > 0){
-        data.items = data.items.filter( (item) => {
-          return new Date(item.start_date).getTime() === new Date(startDateValue.value).getTime() || (new Date(item.start_date).getTime() >= new Date(startDateValue.value).getTime()
-            && new Date(item.start_date).getTime() <= new Date(endDateValue.value).getTime()); 
-        })
+      if (startDateValue.value.length > 0) {
+        data.items = data.items.filter((item) => {
+          return (
+            new Date(item.start_date).getTime() ===
+              new Date(startDateValue.value).getTime() ||
+            (new Date(item.start_date).getTime() >=
+              new Date(startDateValue.value).getTime() &&
+              new Date(item.start_date).getTime() <=
+                new Date(endDateValue.value).getTime())
+          );
+        });
       }
 
-      if(endDateValue.value.length > 0) {
-        data.items = data.items.filter( (item) => {
-          return new Date(item.end_date).toLocaleDateString() === new Date(endDateValue.value).toLocaleDateString() || (new Date(item.start_date).getTime() >= new Date(startDateValue.value).getTime()
-            && new Date(item.start_date).getTime() <= new Date(endDateValue.value).getTime())
-          })
+      if (endDateValue.value.length > 0) {
+        data.items = data.items.filter((item) => {
+          return (
+            new Date(item.end_date).toLocaleDateString() ===
+              new Date(endDateValue.value).toLocaleDateString() ||
+            (new Date(item.start_date).getTime() >=
+              new Date(startDateValue.value).getTime() &&
+              new Date(item.start_date).getTime() <=
+                new Date(endDateValue.value).getTime())
+          );
+        });
       }
       // end filter
 
@@ -471,8 +491,6 @@ export default {
           ...item,
         };
       });
-
-     
     };
 
     watch(startDateValue, (newValue, oldValue) => {
@@ -495,16 +513,12 @@ export default {
       }
     });
 
-    
-
     onBeforeMount(async () => {
       await reFresh();
-     
     });
 
     // computed
     const toString = computed(() => {
-   
       if (data.choseSearch == "name") {
         return data.items.map((value, index) => {
           return [value.nameCustomer].join("").toLocaleLowerCase();
@@ -527,7 +541,9 @@ export default {
     });
     const filter = computed(() => {
       return data.items.filter((value, index) => {
-        return toString.value[index].includes(data.searchText.toLocaleLowerCase());
+        return toString.value[index].includes(
+          data.searchText.toLocaleLowerCase()
+        );
       });
     });
     const filtered = computed(() => {
@@ -544,13 +560,12 @@ export default {
     });
     const setPages = computed(() => {
       if (data.items.length > 0) {
-        
         if (setNumberOfPages.value == 0 || data.entryValue == "All") {
           data.entryValue = data.items.length;
           data.numberOfPages = 1;
         } else data.numberOfPages = setNumberOfPages.value;
         data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-        
+
         data.endRow = data.currentPage * data.entryValue;
         return filtered.value.filter((item, index) => {
           return (
@@ -567,49 +582,20 @@ export default {
       data.searchText = value;
     };
 
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+    const pdfContentRef = ref(null);
+    const handlePrintReport = () => {
+      const printContent = pdfContentRef.value;
+      const originalContents = document.body.innerHTML;
 
-      if (pdfContent.value) {
-        const content = pdfContent.value;
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
 
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-
-          const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let yPosition = 10; // Đặt lề trên là 10px
-          let contentRemainingHeight = imgHeight;
-          let pageNumber = 1;
-
-          while (contentRemainingHeight > 0) {
-            if (pageNumber > 1) {
-              doc.addPage();
-            }
-
-            doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
-
-            contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
-            if (contentRemainingHeight > 0) {
-              yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
-            } else {
-              yPosition = 10; // Reset lề trên cho trang tiếp theo
-            }
-
-            pageNumber++;
-          }
-
-          doc.save("BaoCaoDanhSachKhachHangDoLanhDaoPhuTrach.pdf");
-        });
-      }
+      document.body.innerHTML = originalContents;
     };
 
     const view = async (item) => {
-      console.log('View', item.Customer.gender);
-      
+      console.log("View", item.Customer.gender);
+
       const res = await http_getOne(Customer, item.Customer._id);
       // console.log('Res', res);
       data.viewCareCus = res.documents.Tasks.map((value) => {
@@ -654,7 +640,7 @@ export default {
           name: item.name,
           time_duration: formatDateTime_2(item.time_duration),
           content: item.content,
-          place: item.place != null ? item.place : 'không có',
+          place: item.place != null ? item.place : "không có",
         };
       });
     };
@@ -665,7 +651,7 @@ export default {
       setPages,
       handleUpdateSearchText,
       handlePrintReport,
-      pdfContent,
+      pdfContentRef,
       view,
       store,
       isReadReport,
@@ -747,7 +733,8 @@ a.router-link-active.router-link-exact-active.active-menu {
   font-weight: bold;
 }
 
-a.router-link-active.router-link-exact-active.active-menu span.material-symbols-outlined {
+a.router-link-active.router-link-exact-active.active-menu
+  span.material-symbols-outlined {
   color: blue;
 }
 

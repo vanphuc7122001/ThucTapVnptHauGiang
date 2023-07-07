@@ -45,7 +45,7 @@ export default {
     showActionList: {
       type: Array,
       default: [true, true],
-    }
+    },
   },
   setup(props, ntx) {},
 };
@@ -53,7 +53,10 @@ export default {
 
 <template>
   <div>
-    <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
+    <table
+      class="my-table mb-2"
+      :class="[borderTableAll ? 'border-table-all' : '']"
+    >
       <thead>
         <tr>
           <th>
@@ -93,7 +96,9 @@ export default {
           <td v-for="(label, index1) in labels" :key="index1" class="size-16">
             {{ item[label] }}
           </td>
-          <td class="size-16">{{ item.note == null ? "không có" : item.note }}</td>
+          <td class="size-16">
+            {{ item.note == null ? "không có" : item.note }}
+          </td>
           <td class="size-16">{{ item.Status_App.name }}</td>
           <td class="size-16" v-if="activeAction == true">
             <div class="d-flex align-items-center">
@@ -120,12 +125,29 @@ export default {
               >
                 delete
               </span>
+              <button
+                type="button"
+                class="mx-2 format-btn"
+                data-toggle="modal"
+                data-target="#modal-edit-status"
+                v-if="showActionList[0]"
+              >
+                <span
+                  class="material-symbols-outlined d-flex align-content-center"
+                  id="edit_status"
+                  @click="$emit('editStatus', item, true)"
+                >
+                  task_alt
+                </span>
+              </button>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
-    <p v-if="items.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p>
+    <p v-if="items.length == 0" class="text-center mt-2">
+      Không tồn tại bản ghi.
+    </p>
   </div>
 </template>
 
@@ -155,7 +177,7 @@ export default {
 .my-table tbody tr:nth-child(even) {
   font-size: 13px;
 }
-
+#edit_status,
 #view,
 #edit,
 #delete,
@@ -166,7 +188,7 @@ export default {
   border-radius: 4px;
   padding: 1px;
 }
-#view:hover {
+#edit_status:hover {
   color: var(--blue);
 }
 #edit:hover {

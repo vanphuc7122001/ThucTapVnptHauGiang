@@ -236,7 +236,7 @@
       class="mx-3"
     />
 
-    <div class="container pdf-content" v-show="true" ref="pdfContent">
+    <div class="container pdf-content" v-show="true" ref="pdfContentRef">
       <img
         src="../../../assets/images/vnpt-logo1.png"
         class="rounded-circle"
@@ -335,7 +335,7 @@
 import { reactive, computed, ref, onBeforeMount, watch } from "vue";
 import Table from "../../../components/table/table-report.vue";
 import Mail from "../mail.vue";
-import InputFilter from '../../../components/form/form_filter_truc.vue'
+import InputFilter from "../../../components/form/form_filter_truc.vue";
 
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -383,7 +383,7 @@ export default {
     Search,
     View,
     Mail,
-    InputFilter
+    InputFilter,
   },
   setup(ctx) {
     const store = reactive({
@@ -475,18 +475,30 @@ export default {
         };
       });
 
-      if(startDateValue.value.length > 0){
-        data.items = data.items.filter( (item) => {
-          return new Date(item.start_date).getTime() === new Date(startDateValue.value).getTime() || (new Date(item.start_date).getTime() >= new Date(startDateValue.value).getTime()
-            && new Date(item.start_date).getTime() <= new Date(endDateValue.value).getTime()); 
-        })
+      if (startDateValue.value.length > 0) {
+        data.items = data.items.filter((item) => {
+          return (
+            new Date(item.start_date).getTime() ===
+              new Date(startDateValue.value).getTime() ||
+            (new Date(item.start_date).getTime() >=
+              new Date(startDateValue.value).getTime() &&
+              new Date(item.start_date).getTime() <=
+                new Date(endDateValue.value).getTime())
+          );
+        });
       }
 
-      if(endDateValue.value.length > 0) {
-        data.items = data.items.filter( (item) => {
-          return new Date(item.end_date).toLocaleDateString() === new Date(endDateValue.value).toLocaleDateString() || (new Date(item.start_date).getTime() >= new Date(startDateValue.value).getTime()
-            && new Date(item.start_date).getTime() <= new Date(endDateValue.value).getTime())
-          })
+      if (endDateValue.value.length > 0) {
+        data.items = data.items.filter((item) => {
+          return (
+            new Date(item.end_date).toLocaleDateString() ===
+              new Date(endDateValue.value).toLocaleDateString() ||
+            (new Date(item.start_date).getTime() >=
+              new Date(startDateValue.value).getTime() &&
+              new Date(item.start_date).getTime() <=
+                new Date(endDateValue.value).getTime())
+          );
+        });
       }
 
       data.employee = data.items.map((item) => {
@@ -525,44 +537,15 @@ export default {
     onBeforeMount(() => {
       reFresh();
     });
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+    const pdfContentRef = ref(null);
+    const handlePrintReport = () => {
+      const printContent = pdfContentRef.value;
+      const originalContents = document.body.innerHTML;
 
-      if (pdfContent.value) {
-        const content = pdfContent.value;
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
 
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-
-          const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let yPosition = 10; // Đặt lề trên là 10px
-          let contentRemainingHeight = imgHeight;
-          let pageNumber = 1;
-
-          while (contentRemainingHeight > 0) {
-            if (pageNumber > 1) {
-              doc.addPage();
-            }
-
-            doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
-
-            contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
-            if (contentRemainingHeight > 0) {
-              yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
-            } else {
-              yPosition = 10; // Reset lề trên cho trang tiếp theo
-            }
-
-            pageNumber++;
-          }
-
-          doc.save("BaoCaoKhachHangThuocNhanVienPhuTrach.pdf");
-        });
-      }
+      document.body.innerHTML = originalContents;
     };
 
     // computed
@@ -627,7 +610,7 @@ export default {
     const view = async (item) => {
       // console.log("Before view", item.Customer._id);
       const rs = await http_getOne(Customer, item.Customer._id);
-      
+
       data.viewCareCus = rs.documents.Tasks.map((value) => {
         return {
           name: item.Customer.name,
@@ -647,8 +630,13 @@ export default {
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
           email: item.Customer.email,
-          gender: item.Customer.gender == 0 ? 'Nam' : item.Customer.gender == 1 ? 'Nữ' : 'Chưa cập nhật',
-          note : item.Customer.note ? item.Customer.note : 'Chưa cập nhật',
+          gender:
+            item.Customer.gender == 0
+              ? "Nam"
+              : item.Customer.gender == 1
+              ? "Nữ"
+              : "Chưa cập nhật",
+          note: item.Customer.note ? item.Customer.note : "Chưa cập nhật",
           address: item.Customer.address,
           customerType: item.customerType,
         },
@@ -679,7 +667,7 @@ export default {
       setPages,
       view,
       handlePrintReport,
-      pdfContent,
+      pdfContentRef,
       labels,
       store,
       isReadReport,
@@ -689,7 +677,7 @@ export default {
       isReadReportAssinmentStaff,
       isPrintReport,
       isMail,
-      // 
+      //
       startDateValue,
       endDateValue,
     };
