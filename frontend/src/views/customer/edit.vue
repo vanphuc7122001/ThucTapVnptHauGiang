@@ -32,8 +32,8 @@ export default {
     },
   },
   setup(props, ctx) {
-
     const data = reactive({
+      note: "",
       imgSrc: null,
       stepList: [
         {
@@ -75,7 +75,6 @@ export default {
     };
 
     const onFileChange = (event) => {
-
       props.item.Customer.avatar = event.target.files[0];
 
       // handle display img
@@ -85,16 +84,12 @@ export default {
       } else {
         isImageUploaded.value = false;
       }
-   
-      const reader = new FileReader();
 
-     
+      const reader = new FileReader();
 
       reader.onload = (event) => {
         data.imgSrc = event.target.result;
       };
-
-
 
       reader.readAsDataURL(files);
     };
@@ -139,10 +134,8 @@ export default {
     const searchSelect = async (value) => {
       await refresh(),
         (data.items = data.items.filter((value1, index) => {
-          
           return value1.name.includes(value) || value.length == 0;
-        }))
-       
+        }));
     };
 
     const choosed = async (_id) => {
@@ -165,14 +158,16 @@ export default {
           data.modelValue = companyName;
           refresh();
           props.item.Company_KH._id = res.document._id;
-        
-          alert_success(`Thành công`, `Công ty ${companyName}  đã được tạo thành công.`);
+
+          alert_success(
+            `Thành công`,
+            `Công ty ${companyName}  đã được tạo thành công.`
+          );
         }
       } else {
         const rs = await http_getOne(Company_KH, _id);
         data.modelValue = rs.name;
         props.item.Company_KH._id = _id;
-        
       }
     };
 
@@ -207,15 +202,21 @@ export default {
         const formData = new FormData();
         if (isImageUploaded.value == false) {
           formData.append("avatar", props.item.Customer.avatar);
-        } 
+        }
         formData.append("name", props.item.Customer.name);
         formData.append("birthday", props.item.Customer.birthday);
         formData.append("address", props.item.Customer.address);
         formData.append("phone", props.item.Customer.phone);
         formData.append("email", props.item.Customer.email);
+        formData.append("note", data.note);
+        formData.append("gender", props.item.Customer.gender);
         formData.append("customerTypesId", props.item.Customer_Type._id);
 
-        const res = await http_update(Customer, props.item.Customer._id, formData);
+        const res = await http_update(
+          Customer,
+          props.item.Customer._id,
+          formData
+        );
         if (res.error) {
           alert_error(`Lổi`, res.msg);
         } else {
@@ -228,7 +229,11 @@ export default {
             companyId: props.item.Company_KH._id,
           };
 
-          const result = await http_update(Customer_Work, props.item._id, object);
+          const result = await http_update(
+            Customer_Work,
+            props.item._id,
+            object
+          );
           if (result.error) {
             alert_error(`Lổi`, result.msg);
           } else {
@@ -263,8 +268,12 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 18px">Sửa thông tin khách hàng</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="font-size: 18px">
+            Sửa thông tin khách hàng
+          </h4>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
         </div>
 
         <!-- Modal body -->
@@ -295,12 +304,19 @@ export default {
               class="d-flex flex-grow-1 flex-column step-content px-3 my-3"
               style="width: 10000px"
             >
-              <form action="" class="was-validated" style="width: 100%" method="put">
+              <form
+                action=""
+                class="was-validated"
+                style="width: 100%"
+                method="put"
+              >
                 <!--begin  page 1 -->
                 <div v-if="data.activeStep == 1" class="page-1">
                   <div class="form-row">
                     <div class="form-group col-md-6">
-                      <label for="name">Tên (<span style="color: red">*</span>)</label>
+                      <label for="name"
+                        >Tên (<span style="color: red">*</span>)</label
+                      >
                       <input
                         type="text"
                         class="form-control"
@@ -323,6 +339,43 @@ export default {
                     </div>
                   </div>
                   <div class="form-group">
+                    <label for="">Giới tính</label>
+                    <br />
+                    <!-- {{ item.Customer.gender }} -->
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        value="0"
+                        v-model="item.Customer.gender"
+                        :checked="item.Customer.gender === '0' ? true : false"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="inlineRadio1"
+                        style="color: black"
+                      >
+                        Nam
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        value="1"
+                        v-model="item.Customer.gender"
+                        :checked="item.Customer.gender === '1' ? true : false"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="inlineRadio2"
+                        style="color: black"
+                      >
+                        Nử
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
                     <label for="address"
                       >Địa chỉ (<span style="color: red">*</span>)</label
                     >
@@ -334,7 +387,19 @@ export default {
                     ></textarea>
                   </div>
                   <div class="form-group">
-                    <label for="phone">Sdt (<span style="color: red">*</span>)</label>
+                    <label for="note">Ghi chú</label>
+                    <textarea
+                      style="border-color: #28a745"
+                      name=""
+                      class="form-control"
+                      v-model="data.note"
+                      required
+                    ></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="phone"
+                      >Sdt (<span style="color: red">*</span>)</label
+                    >
                     <input
                       type="text"
                       class="form-control"
@@ -346,14 +411,13 @@ export default {
                   </div>
                   <div class="form-row">
                     <div class="form-group col-md-6">
-                      <label for="email">Email (<span style="color: red">*</span>)</label>
+                      <label for="email">Email</label>
                       <input
+                        style="border-color: #28a745"
                         type="text"
                         class="form-control"
                         id="email"
                         v-model="item.Customer.email"
-                        required
-                        disabled
                       />
                     </div>
                     <div class="form-group col-md-6">
@@ -426,7 +490,8 @@ export default {
                   <div class="form-row">
                     <div class="form-group col-md-6">
                       <label for="wor_current_workplace"
-                        >Nơi đang công tác(<span style="color: red">*</span>)</label
+                        >Nơi đang công tác(<span style="color: red">*</span
+                        >)</label
                       >
                       <input
                         type="text"
@@ -438,7 +503,8 @@ export default {
                     </div>
                     <div class="form-group col-md-6">
                       <label for="wor_current_position"
-                        >Chức vụ đang công tác(<span style="color: red">*</span>)</label
+                        >Chức vụ đang công tác(<span style="color: red">*</span
+                        >)</label
                       >
                       <input
                         type="text"
@@ -452,7 +518,8 @@ export default {
 
                   <div class="form-group">
                     <label for="wor_work_history"
-                      >Lịch sử công tác(<span style="color: red">*</span>)</label
+                      >Lịch sử công tác(<span style="color: red">*</span
+                      >)</label
                     >
                     <textarea
                       name=""
@@ -487,19 +554,29 @@ export default {
 
               <div class="d-flex justify-content-end mt-3">
                 <span
-                  v-if="data.activeStep >= 1 && data.activeStep < data.stepList.length"
+                  v-if="
+                    data.activeStep >= 1 &&
+                    data.activeStep < data.stepList.length
+                  "
                   class="btn-next d-flex align-items-center px-3 py-1 mx-2"
                   @click="data.activeStep = data.activeStep + 1"
                   >Tiếp tục
-                  <span class="material-symbols-outlined d-flex align-items-center">
+                  <span
+                    class="material-symbols-outlined d-flex align-items-center"
+                  >
                     navigate_next
                   </span>
                 </span>
                 <span
-                  v-if="data.activeStep > 1 && data.activeStep <= data.stepList.length"
+                  v-if="
+                    data.activeStep > 1 &&
+                    data.activeStep <= data.stepList.length
+                  "
                   class="btn-prev d-flex align-items-center px-3 py-1"
                   @click="data.activeStep = data.activeStep - 1"
-                  ><span class="material-symbols-outlined d-flex align-items-center mx-2">
+                  ><span
+                    class="material-symbols-outlined d-flex align-items-center mx-2"
+                  >
                     navigate_before </span
                   >Quay lại</span
                 >

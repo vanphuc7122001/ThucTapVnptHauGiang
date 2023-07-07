@@ -97,13 +97,11 @@
       </div>
     </div>
     <!-- Filter -->
-    <div class="border-hr my-3"></div>
-    <!-- Filter -->
+    <!-- <div class="border-hr my-3"></div>
     <div class="d-flex flex-column">
       <span class="mx-3 mb-3 h6 size-18">Lọc theo thời gian</span>
       <div class="d-flex mx-3">
         <div class="form-group w-100">
-          <!-- entryValue = modelValue -->
           <InputFilter
             @update:entryValue="(value) => (startDateValue = value)"
             :title="`Ngày bắt đầu`"
@@ -120,7 +118,7 @@
           />
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">

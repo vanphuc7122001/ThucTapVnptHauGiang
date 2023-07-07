@@ -43,7 +43,6 @@ export default {
     watch(
       () => props.resetData,
       async (newValue, oldValue) => {
-       
         await refresh();
       },
       { immediate: true }
@@ -79,6 +78,7 @@ export default {
         address: "",
         phone: "",
         email: "",
+        gender: "",
       },
       customerCompany: {
         name: "",
@@ -118,7 +118,7 @@ export default {
 
       // handle display img
       const file = event.target.files[0];
-      
+
       const reader = new FileReader();
 
       reader.onload = (event) => {
@@ -169,14 +169,11 @@ export default {
     const searchSelect = async (value) => {
       await refresh(),
         (data.items = data.items.filter((value1, index) => {
-          
           return value1.name.includes(value) || value.length == 0;
-        }))
-       
+        }));
     };
 
     const choosed = async (_id) => {
-      
       if (_id === "other") {
         const { value: companyName } = await Swal.fire({
           title: "Thêm công ty",
@@ -196,7 +193,7 @@ export default {
           data.modelValue = companyName;
           refresh();
           viewData.customerCompany._id = res.document._id;
-          
+
           alert_success(
             `Thành công`,
             `Công ty ${companyName}  đã được tạo thành công.`
@@ -206,7 +203,6 @@ export default {
         const rs = await http_getOne(Company_KH, _id);
         data.modelValue = rs.name;
         viewData.customerCompany._id = _id;
-        
       }
     };
 
@@ -230,15 +226,11 @@ export default {
 
     // handle create customer
     const create = async (event) => {
-   
       event.preventDefault();
       let isCheck = false;
       refresh();
       for (const value of data.customer) {
-        if (
-          value.phone == viewData.customerInfo.phone &&
-          value.email == viewData.customerInfo.email
-        ) {
+        if (value.phone == viewData.customerInfo.phone) {
           isCheck = true;
         }
       }
@@ -255,12 +247,13 @@ export default {
         formData.append("address", viewData.customerInfo.address);
         formData.append("phone", viewData.customerInfo.phone);
         formData.append("email", viewData.customerInfo.email);
+        formData.append("note", "");
+        formData.append("gender", viewData.customerInfo.gender);
         formData.append(
           "customerTypesId",
           viewData.customerInfo.customerTypesId
         );
 
-        
         const res = await http_create(Customer, formData);
 
         if (res.error) {
@@ -276,7 +269,7 @@ export default {
           };
 
           const customerWork = await http_create(Customer_Work, object);
-          
+
           if (customerWork.error) {
             alert_error(`Lổi`, customerWork.msg);
           } else {
@@ -383,6 +376,32 @@ export default {
                     </div>
                   </div>
                   <div class="form-group">
+                    <label for="">Giới tính</label>
+                    <br>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        value="0"
+                        v-model="viewData.customerInfo.gender"
+                      />
+                      <label class="form-check-label" for="inlineRadio1" style="color: black"
+                        >Nam</label
+                      >
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        value="1"
+                        v-model="viewData.customerInfo.gender"
+                      />
+                      <label class="form-check-label" for="inlineRadio2" style="color: black"
+                        >Nử</label
+                      >
+                    </div>
+                  </div>
+                  <div class="form-group">
                     <label for="address"
                       >Địa chỉ (<span style="color: red">*</span>)</label
                     >
@@ -407,15 +426,13 @@ export default {
                   </div>
                   <div class="form-row">
                     <div class="form-group col-md-6">
-                      <label for="email"
-                        >Email (<span style="color: red">*</span>)</label
-                      >
+                      <label for="email">Email</label>
                       <input
+                        style="border-color: #28a745"
                         type="text"
                         class="form-control"
                         id="email"
                         v-model="viewData.customerInfo.email"
-                        required
                       />
                     </div>
                     <div class="form-group col-md-6">

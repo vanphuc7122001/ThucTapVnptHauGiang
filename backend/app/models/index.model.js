@@ -146,10 +146,6 @@ const Customer = sequelize.define("Customer", {
       notEmpty: {
         msg: "SDT khách hàng không được bỏ trống.",
       },
-      // len: {
-      //     args: [1, Infinity], // Độ dài từ 1 ký tự trở lên
-      //     msg: 'Tên người dùng không được bỏ trống.',
-      // },
     },
     get() {
       return getDecrypt("phone", this);
@@ -160,21 +156,35 @@ const Customer = sequelize.define("Customer", {
   },
   email: {
     type: DataTypes.TEXT,
-    allowNull: false,
-    validate: {
-      notEmpty: {
-        msg: "Email khách hàng không được bỏ trống.",
-      },
-      // len: {
-      //     args: [1, Infinity], // Độ dài từ 1 ký tự trở lên
-      //     msg: 'Tên người dùng không được bỏ trống.',
-      // },
-    },
+    allowNull: true,
+    defaultValue: "",
     get() {
       return getDecrypt("email", this);
     },
     set(value) {
       setEncrypt(value, "email", this);
+    },
+  },
+  note: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    defaultValue: "",
+    get() {
+      return getDecrypt("note", this);
+    },
+    set(value) {
+      setEncrypt(value, "note", this);
+    },
+  },
+  gender: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    defaultValue: "",
+    get() {
+      return getDecrypt("gender", this);
+    },
+    set(value) {
+      setEncrypt(value, "gender", this);
     },
   },
 });
@@ -1192,10 +1202,10 @@ Comment.belongsTo(Task, {
 
 // Sync the model with the database
 Customer_Types.sync();
-Customer.sync();
+Customer.sync({});
 Customer_Work.sync();
 Company_KH.sync();
-Event.sync({ });
+Event.sync({});
 Habit.sync();
 Position.sync();
 Center_VNPTHG.sync();

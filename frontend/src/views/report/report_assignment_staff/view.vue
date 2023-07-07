@@ -88,13 +88,19 @@ export default {
                           <span class="font-weight-bold"
                             >Email mail khách hàng:</span
                           >
-                          {{ item.Customer.email }}
+                          {{ item.Customer.email ? item.Customer.email : "Chưa cập nhật" }}
                         </p>
                         <p>
                           <span class="font-weight-bold"
                             >Số điện thoại khách hàng:</span
                           >
                           {{ item.Customer.phone }}
+                        </p>
+                        <p>
+                          <span class="font-weight-bold"
+                            >Giới tính:</span
+                          >
+                          {{ item.Customer.gender == 0 ? "Nam" : item.Customer.gender == 1 ? 'Nữ' : "Chưa cập nhật" }}
                         </p>
                       </div>
                     </div>
@@ -119,6 +125,10 @@ export default {
                         <p>
                           <span class="font-weight-bold">Loại khách hàng:</span>
                           {{ item.customerType }}
+                        </p>
+                        <p>
+                          <span class="font-weight-bold">Ghi chú:</span>
+                          {{ item.Customer.note ? item.Customer.note : "Chưa cập nhật" }}
                         </p>
                       </div>
                     </div>

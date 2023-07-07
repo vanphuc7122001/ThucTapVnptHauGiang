@@ -184,30 +184,6 @@ export default {
         });
       }
 
-    //   watch(entryValueAge, (newValue, oldValue) => {
-    //   // console.log('Age', newValue);
-    //   if (newValue != "") {
-    //     data.currentPage = 1;
-    //     reFresh();
-    //   } else {
-    //     data.currentPage = 1;
-    //     reFresh();
-    //   }
-    // });
-
-    // {
-    //             value: '1',
-    //             name: 'lớn hơn 18'
-    //           },
-    //           {
-    //             value: '2',
-    //             name: 'từ 18 đến 30'
-    //           },
-    //           {
-    //             value: '3',
-    //             name: 'lớn hơn 30'
-    //           }
-
       if (entryValueStatusTask.value.length > 0) {
         data.items = data.items.filter((cusWork) => {
           return (
@@ -267,7 +243,6 @@ export default {
         });
       } else if (data.choseSearch == "phone") {
         return data.items.map((value, index) => {
-          // console.log('Value: ', [value.Customer.birthday].join("").toLocaleLowerCase());
           return [value.Customer.phone].join("").toLocaleLowerCase();
         });
       } else if (data.choseSearch == "age") {
@@ -368,8 +343,10 @@ export default {
           birthday: formatDate(item.Customer.birthday),
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
-          email: item.Customer.email,
+          email: item.Customer.email ? item.Customer.email : 'Chưa cập nhật',
           address: item.Customer.address,
+          gender: item.Customer.gender,
+          note: item.Customer.note
         },
         Customer_Type: {
           _id: item.Customer.Customer_Type._id,
@@ -417,6 +394,7 @@ export default {
     //   formatDateTime,
     // formatDate,
     const edit = (item, isCheck) => {
+      // console.log('Edit', item);
       data.activeShowEdit = true;
       reFresh();
       data.viewValue = {
@@ -426,8 +404,9 @@ export default {
           birthday: item.Customer.birthday,
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
-          email: item.Customer.email,
+          email: item.Customer.email ? item.Customer.email : 'Chưa cập nhật',
           address: item.Customer.address,
+          gender: item.Customer.gender,
         },
         Customer_Type: {
           _id: item.Customer.Customer_Type._id,

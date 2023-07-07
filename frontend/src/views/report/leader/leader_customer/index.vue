@@ -121,30 +121,6 @@
         </div>
       </div>
     </div>
-    <div class="border-hr my-3"></div>
-    <!-- Filter -->
-    <div class="d-flex flex-column">
-      <span class="mx-3 mb-3 h6 size-18">Lọc theo thời gian</span>
-      <div class="d-flex mx-3">
-        <div class="form-group w-100">
-          <!-- entryValue = modelValue -->
-          <InputFilter
-            @update:entryValue="(value) => (startDateValue = value)"
-            :title="`Ngày bắt đầu`"
-            :entryValue="`Ngày bắt đầu`"
-            style="height: 35px"
-          />
-        </div>
-        <div class="form-group w-100 ml-3">
-          <InputFilter
-            @update:entryValue="(value) => (endDateValue = value)"
-            :title="`Ngày kết thúc`"
-            :entryValue="`Ngày kết thúc`"
-            style="height: 35px"
-          />
-        </div>
-      </div>
-    </div>
     <!-- Search -->
     <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">
@@ -330,7 +306,7 @@
 </template>
 
 <script>
-import { reactive, computed, ref, onBeforeMount } from "vue";
+import { reactive, computed, ref, onBeforeMount, watch } from "vue";
 import Table from "../../../../components/table/table-report.vue";
 import Mail from "../../mail.vue";
 
@@ -431,6 +407,9 @@ export default {
       viewCareCus: [],
     });
 
+    const startDateValue = ref("");
+    const endDateValue = ref("");
+
     const reFresh = async () => {
       store.countCustomer = await countCustomer();
       store.countEmployee = await countEmployee();
@@ -465,7 +444,22 @@ export default {
         );
       });
 
-  
+
+      // begin filter
+      if(startDateValue.value.length > 0){
+        data.items = data.items.filter( (item) => {
+          return new Date(item.start_date).getTime() === new Date(startDateValue.value).getTime() || (new Date(item.start_date).getTime() >= new Date(startDateValue.value).getTime()
+            && new Date(item.start_date).getTime() <= new Date(endDateValue.value).getTime()); 
+        })
+      }
+
+      if(endDateValue.value.length > 0) {
+        data.items = data.items.filter( (item) => {
+          return new Date(item.end_date).toLocaleDateString() === new Date(endDateValue.value).toLocaleDateString() || (new Date(item.start_date).getTime() >= new Date(startDateValue.value).getTime()
+            && new Date(item.start_date).getTime() <= new Date(endDateValue.value).getTime())
+          })
+      }
+      // end filter
 
       data.items = data.items.map((item) => {
         return {
@@ -480,6 +474,26 @@ export default {
 
      
     };
+
+    watch(startDateValue, (newValue, oldValue) => {
+      if (newValue != "") {
+        data.currentPage = 1;
+        reFresh();
+      } else {
+        data.currentPage = 1;
+        reFresh();
+      }
+    });
+
+    watch(endDateValue, (newValue, oldValue) => {
+      if (newValue != "") {
+        data.currentPage = 1;
+        reFresh();
+      } else {
+        data.currentPage = 1;
+        reFresh();
+      }
+    });
 
     
 
@@ -594,9 +608,10 @@ export default {
     };
 
     const view = async (item) => {
+      console.log('View', item.Customer.gender);
       
       const res = await http_getOne(Customer, item.Customer._id);
-
+      // console.log('Res', res);
       data.viewCareCus = res.documents.Tasks.map((value) => {
         return {
           name: item.Customer.name,
@@ -616,6 +631,7 @@ export default {
           nameCustomer: item.Customer.name,
           phoneCustomer: item.Customer.phone,
           emailCustomer: item.Customer.email,
+          gender: item.Customer.gender,
           birthdayCustomer: formatDate(item.Customer.birthday),
           avatarCustomer: item.Customer.avatar,
           addressCustomer: item.Customer.address,
@@ -658,7 +674,10 @@ export default {
       isReadReportCustomerCycle,
       isReadReportAssinmentStaff,
       isPrintReport,
-      isMail
+      isMail,
+      //
+      startDateValue,
+      endDateValue,
     };
   },
 };

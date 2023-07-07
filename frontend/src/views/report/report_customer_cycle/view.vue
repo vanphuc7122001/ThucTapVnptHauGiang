@@ -82,6 +82,10 @@ export default {
                           <span class="font-weight-bold">SDT:</span>
                           {{ item.Customer.phone }}
                         </p>
+                        <p>
+                          <span class="font-weight-bold">Giới tính:</span>
+                          {{ item.Customer.gender }}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -101,6 +105,10 @@ export default {
                         <p>
                           <span class="font-weight-bold">Loại:</span>
                           {{ item.Customer_Type.name }}
+                        </p>
+                        <p>
+                          <span class="font-weight-bold">Ghi chú:</span>
+                          {{ item.Customer.note }}
                         </p>
                       </div>
                     </div>

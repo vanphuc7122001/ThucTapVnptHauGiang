@@ -476,23 +476,17 @@ export default {
       });
 
       if(startDateValue.value.length > 0){
-        let newArray = []
-        newArray = data.items.filter( (item) => {
-          return new Date(item.start_date) >= new Date(startDateValue.value) 
-            && new Date(item.start_date) <= new Date(endDateValue.value)
+        data.items = data.items.filter( (item) => {
+          return new Date(item.start_date).getTime() === new Date(startDateValue.value).getTime() || (new Date(item.start_date).getTime() >= new Date(startDateValue.value).getTime()
+            && new Date(item.start_date).getTime() <= new Date(endDateValue.value).getTime()); 
         })
-
-        data.items = [...newArray]
       }
 
       if(endDateValue.value.length > 0) {
-        // let newArray = []
         data.items = data.items.filter( (item) => {
-          return new Date(item.start_date) >= new Date(startDateValue.value) 
-            && new Date(item.start_date) <= new Date(endDateValue.value)
-        })
-
-        // data.items = [...newArray]
+          return new Date(item.end_date).toLocaleDateString() === new Date(endDateValue.value).toLocaleDateString() || (new Date(item.start_date).getTime() >= new Date(startDateValue.value).getTime()
+            && new Date(item.start_date).getTime() <= new Date(endDateValue.value).getTime())
+          })
       }
 
       data.employee = data.items.map((item) => {
@@ -653,6 +647,8 @@ export default {
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
           email: item.Customer.email,
+          gender: item.Customer.gender == 0 ? 'Nam' : item.Customer.gender == 1 ? 'Nữ' : 'Chưa cập nhật',
+          note : item.Customer.note ? item.Customer.note : 'Chưa cập nhật',
           address: item.Customer.address,
           customerType: item.customerType,
         },

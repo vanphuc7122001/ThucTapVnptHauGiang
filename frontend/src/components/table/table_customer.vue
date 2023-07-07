@@ -35,7 +35,7 @@
           </td>
           <td class="size-16">{{ startRow + index }}</td>
           <td class="size-16">{{ item.Customer.name }}</td>
-          <td class="size-16">{{ item.Customer.email }}</td>
+          <td class="size-16">{{ item.Customer.email ? item.Customer.email : 'Chưa cập nhật' }}</td>
           <td class="size-16">{{ item.Customer.phone }}</td>
           <td class="size-16">{{ item.current_position }}</td>
           <td class="size-16">{{ item.Company_KH.name }}</td>

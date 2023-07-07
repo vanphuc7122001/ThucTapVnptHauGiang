@@ -593,27 +593,23 @@ export default {
       });
 
       if (startDateValue.value.length > 0) {
-        let newArray = []
-        newArray = data.items.filter(item => {
+        data.items = data.items.filter(item => {
           return item.Tasks.filter(task => {
-            return new Date(task.start_date) >= new Date(startDateValue.value) 
-            && new Date(task.start_date) <= new Date(endDateValue.value)
+            return new Date(task.start_date).getTime() === new Date(startDateValue.value).getTime() || (new Date(task.start_date).getTime() >= new Date(startDateValue.value).getTime() 
+            && new Date(task.start_date).getTime() <= new Date(endDateValue.value).getTime());
           }).length > 0;
         })
 
-        data.items = [...newArray]
+        // console.log('Rs', rs);
       }
 
       if (endDateValue.value.length > 0) {
-        let newArray = []
-        newArray = data.items.filter(item => {
+        data.items = data.items.filter(item => {
           return item.Tasks.filter(task => {
-            return new Date(task.start_date) >= new Date(startDateValue.value) 
-            && new Date(task.start_date) <= new Date(endDateValue.value)
+            return new Date(task.end_date).toLocaleDateString() === new Date(endDateValue.value).toLocaleDateString() || (new Date(task.start_date).getTime() >= new Date(startDateValue.value).getTime() 
+            && new Date(task.start_date).getTime() <= new Date(endDateValue.value).getTime());
           }).length > 0;
         })
-
-        data.items = [...newArray]
       }
     };
 
@@ -761,8 +757,10 @@ export default {
           birthday: formatDate(item.Customer.birthday),
           avatar: item.Customer.avatar,
           phone: item.Customer.phone,
-          email: item.Customer.email,
+          email: item.Customer.email ? item.Customer.email : 'Chưa cập nhật',
           address: item.Customer.address,
+          gender: item.Customer.gender == 0 ? 'Nam' : item.Customer.gender == 1 ? 'Nữ' : 'Chưa cập nhật',
+          note: item.Customer.note ? item.Customer.note : "Chưa cập nhật"
         },
         Customer_Type: {
           _id: item.Customer.Customer_Type._id,
