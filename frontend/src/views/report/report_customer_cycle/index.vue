@@ -316,7 +316,7 @@
 </template>
 
 <script>
-import { reactive, computed, ref, onBeforeMount } from "vue";
+import { reactive, computed, ref, onBeforeMount, watch } from "vue";
 import Table from "../../../components/table/table-report.vue";
 import Mail from "../mail.vue";
 import {
@@ -425,6 +425,9 @@ export default {
       viewCareCus: null,
       lengthCustomer: 0,
     });
+
+    const startDateValue = ref("");
+    const endDateValue = ref("");
 
     const reFresh = async () => {
       store.countCustomer = await countCustomer();
@@ -588,7 +591,54 @@ export default {
           ...item,
         };
       });
+
+      if (startDateValue.value.length > 0) {
+        let newArray = []
+        newArray = data.items.filter(item => {
+          return item.Tasks.filter(task => {
+            return new Date(task.start_date) >= new Date(startDateValue.value) 
+            && new Date(task.start_date) <= new Date(endDateValue.value)
+          }).length > 0;
+        })
+
+        data.items = [...newArray]
+      }
+
+      if (endDateValue.value.length > 0) {
+        let newArray = []
+        newArray = data.items.filter(item => {
+          return item.Tasks.filter(task => {
+            return new Date(task.start_date) >= new Date(startDateValue.value) 
+            && new Date(task.start_date) <= new Date(endDateValue.value)
+          }).length > 0;
+        })
+
+        data.items = [...newArray]
+      }
     };
+
+    // Begin watch
+    watch(startDateValue, (newValue, oldValue) => {
+      if (newValue != "") {
+        data.currentPage = 1;
+        reFresh();
+      } else {
+        data.currentPage = 1;
+        reFresh();
+      }
+    });
+
+    watch(endDateValue, (newValue, oldValue) => {
+      if (newValue != "") {
+        data.currentPage = 1;
+        reFresh();
+      } else {
+        data.currentPage = 1;
+        reFresh();
+      }
+    });
+
+    // End watch
 
     // handle update entry value
     const handleUpdateEntryValue = (value) => {
@@ -778,6 +828,9 @@ export default {
       isReadReportAssinmentStaff,
       isPrintReport,
       isMail,
+      //
+      startDateValue,
+      endDateValue,
     };
   },
 };

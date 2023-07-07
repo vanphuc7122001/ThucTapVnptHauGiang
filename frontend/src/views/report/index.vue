@@ -612,20 +612,29 @@ export default {
       if (startDateValue.value.length > 0) {
         data.items = data.items.filter(item => {
           return item.Tasks.filter(task => {
-            return new Date(task.start_date) >= new Date(startDateValue.value) 
-            && new Date(task.start_date) <= new Date(endDateValue.value)
+            return new Date(task.start_date) >= new Date(startDateValue.value)
+          }).length > 0;
+        })
+
+        // console.log('Rs', rs);
+      }
+
+      if (endDateValue.value.length > 0) {
+        data.items = data.items.filter(item => {
+          return item.Tasks.filter(task => {
+            return new Date(task.end_date) >= new Date(endDateValue.value)
           }).length > 0;
         })
       }
 
-      if (endDateValue.value.length > 0) {
+      if(startDateValue.value.length > 0 && endDateValue.value.length > 0){
         data.items = data.items.filter(item => {
           return item.Tasks.filter(task => {
             return new Date(task.start_date) >= new Date(startDateValue.value) 
             && new Date(task.start_date) <= new Date(endDateValue.value)
           }).length > 0;
         })
-      }
+      } 
 
     };
 

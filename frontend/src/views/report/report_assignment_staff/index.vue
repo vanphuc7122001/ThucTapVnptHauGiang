@@ -332,7 +332,7 @@
   </div>
 </template>
 <script>
-import { reactive, computed, ref, onBeforeMount } from "vue";
+import { reactive, computed, ref, onBeforeMount, watch } from "vue";
 import Table from "../../../components/table/table-report.vue";
 import Mail from "../mail.vue";
 import InputFilter from '../../../components/form/form_filter_truc.vue'
@@ -422,6 +422,9 @@ export default {
       viewCareCus: [],
     });
 
+    const startDateValue = ref("");
+    const endDateValue = ref("");
+
     const reFresh = async () => {
       store.countCustomer = await countCustomer();
       store.countEmployee = await countEmployee();
@@ -472,6 +475,26 @@ export default {
         };
       });
 
+      if(startDateValue.value.length > 0){
+        let newArray = []
+        newArray = data.items.filter( (item) => {
+          return new Date(item.start_date) >= new Date(startDateValue.value) 
+            && new Date(item.start_date) <= new Date(endDateValue.value)
+        })
+
+        data.items = [...newArray]
+      }
+
+      if(endDateValue.value.length > 0) {
+        // let newArray = []
+        data.items = data.items.filter( (item) => {
+          return new Date(item.start_date) >= new Date(startDateValue.value) 
+            && new Date(item.start_date) <= new Date(endDateValue.value)
+        })
+
+        // data.items = [...newArray]
+      }
+
       data.employee = data.items.map((item) => {
         return {
           statusTask: item.statusTask,
@@ -482,9 +505,27 @@ export default {
           employee: [...item.employee],
         };
       });
-
-      // console.log("data employee: ", data.employee[0].employee[0].name);
     };
+
+    watch(startDateValue, (newValue, oldValue) => {
+      if (newValue != "") {
+        data.currentPage = 1;
+        reFresh();
+      } else {
+        data.currentPage = 1;
+        reFresh();
+      }
+    });
+
+    watch(endDateValue, (newValue, oldValue) => {
+      if (newValue != "") {
+        data.currentPage = 1;
+        reFresh();
+      } else {
+        data.currentPage = 1;
+        reFresh();
+      }
+    });
 
     // life cycle
     onBeforeMount(() => {
@@ -652,6 +693,9 @@ export default {
       isReadReportAssinmentStaff,
       isPrintReport,
       isMail,
+      // 
+      startDateValue,
+      endDateValue,
     };
   },
 };
