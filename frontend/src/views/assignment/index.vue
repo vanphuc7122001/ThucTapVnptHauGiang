@@ -1491,7 +1491,7 @@ export default {
         );
         setTimeout(() => {
           window.location.reload();
-        }, 1000);
+        }, 1500);
         return;
       }
       data.editValue = value;
@@ -1521,7 +1521,7 @@ export default {
         alert_success(`Sửa phân công`, `${result.msg}`);
         setTimeout(() => {
           window.location.reload();
-        }, 1000);
+        }, 1500);
         await refresh();
       } else if (result.error) {
         alert_error(`Sửa phân công`, `${result.msg}`);
