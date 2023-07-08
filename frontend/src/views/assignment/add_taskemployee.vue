@@ -177,9 +177,11 @@ export default {
     // ******LỌC ******
     watch(entryValuePosition, async (newValue, oldValue) => {
       if (newValue == "") {
+        data.currentPage = 1;
         await refresh();
         return;
       }
+      data.currentPage = 1;
       data.itemEm = await http_getAll(Employee);
       //1.lấy danh sách nhân viên chức vụ x
       if (entryValuePosition.value.length > 0) {
@@ -242,9 +244,11 @@ export default {
     //  CENTER
     watch(entryValueCenter, async (newValue, oldValue) => {
       if (newValue == "") {
+        data.currentPage = 1;
         await refresh();
         return;
       }
+      data.currentPage = 1;
       entryValueDepartment.value = "1"; //id
       entryNameDepartment.value = "Phòng"; //name
       entryValueUnit.value = "1"; //id
@@ -311,11 +315,13 @@ export default {
     //DEP
     watch(entryValueDepartment, async (newValue, oldValue) => {
       if (newValue == "") {
+        data.currentPage = 1;
         await refresh();
         return;
       } else if (newValue == "1") {
         return;
       }
+      data.currentPage = 1;
       entryValueUnit.value = "1"; //id
       entryNameUnit.value = "Tổ"; //name
 
@@ -370,11 +376,13 @@ export default {
     //UNIT
     watch(entryValueUnit, async (newValue, oldValue) => {
       if (newValue == "") {
+        data.currentPage = 1;
         await refresh();
         return;
       } else if (newValue == "1") {
         return;
       }
+      data.currentPage = 1;
       //Lấy tất cả nhân vien
       data.itemEm = await http_getAll(Employee);
       //Lọc
