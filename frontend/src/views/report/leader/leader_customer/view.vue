@@ -42,7 +42,9 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 18px;">Thông tin chi tiết khách hàng</h4>
+          <h4 class="modal-title" style="font-size: 18px">
+            Thông tin chi tiết khách hàng
+          </h4>
           <button type="button" class="close" data-dismiss="modal">
             &times;
           </button>
@@ -86,7 +88,11 @@ export default {
                           <span class="font-weight-bold"
                             >Email khách hàng:</span
                           >
-                          {{ item.emailCustomer ? item.emailCustomer : 'Chưa cập nhật' }}
+                          {{
+                            item.emailCustomer
+                              ? item.emailCustomer
+                              : "Chưa cập nhật"
+                          }}
                         </p>
                         <p>
                           <span class="font-weight-bold">Số điện thoại:</span>
@@ -94,7 +100,13 @@ export default {
                         </p>
                         <p>
                           <span class="font-weight-bold">Giới tính:</span>
-                          {{ item.Customer.gender == 0 ? 'Nam' : item.Customer.gender == 1 ? "Nữ" : 'Chưa cập nhật' }}
+                          {{
+                            item.Customer.gender == 0
+                              ? "Nam"
+                              : item.Customer.gender == 1
+                              ? "Nữ"
+                              : "Chưa cập nhật"
+                          }}
                         </p>
                       </div>
                     </div>
@@ -122,7 +134,11 @@ export default {
                         </p>
                         <p>
                           <span class="font-weight-bold">Ghi chú:</span>
-                          {{ item.Customer.note ? item.Customer.note : "Chưa cập nhật" }}
+                          {{
+                            item.Customer.note
+                              ? item.Customer.note
+                              : "Chưa cập nhật"
+                          }}
                         </p>
                       </div>
                     </div>
@@ -240,8 +256,13 @@ export default {
             <div v-if="isActive" id="event" class="collapse">
               <Table
                 :items="Events"
-                :fields="['Tên sự kiện', 'Thời gian diển ra', 'Địa điểm', 'Nội dung']"
-                :labels="['name', 'time_duration', 'place',  'content']"
+                :fields="[
+                  'Tên sự kiện',
+                  'Thời gian diển ra',
+                  'Địa điểm',
+                  'Nội dung',
+                ]"
+                :labels="['name', 'time_duration', 'place', 'content']"
                 :borderTableAll="true"
                 :showActionList="[false, false, false]"
                 :activeAction="false"

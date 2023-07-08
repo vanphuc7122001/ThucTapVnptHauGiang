@@ -546,7 +546,7 @@ export default {
                   type="submit"
                   v-if="data.activeStep == data.stepList.length"
                   @click="update"
-                  class="btn btn-primary"
+                  class="btn btn-warning"
                 >
                   Cập nhật
                 </button>

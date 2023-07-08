@@ -21,11 +21,14 @@ export default {
 
     const handleActiveCus = () => {
       isActive.value = !isActive.value;
+      activeInfo.value = false;
     };
+    const activeInfo = ref(true);
 
     return {
       isActive,
       handleActiveCus,
+      activeInfo,
     };
   },
 };
@@ -58,9 +61,9 @@ export default {
               Thông tin cá nhân
             </button>
             <div
-              v-if="isActive"
+              v-if="isActive || activeInfo"
               id="personal-info"
-              class="collapse my-2 border-all"
+              class="my-2 border-all"
             >
               <img
                 :src="item.Customer.avatar"

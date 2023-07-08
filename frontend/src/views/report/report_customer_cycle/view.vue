@@ -18,11 +18,14 @@ export default {
 
     const handleActiveCus = () => {
       isActive.value = !isActive.value;
+      activeInfo.value = false;
     };
+    const activeInfo = ref(true);
 
     return {
       isActive,
       handleActiveCus,
+      activeInfo,
     };
   },
 };
@@ -34,7 +37,9 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 18px">Thông tin chi tiết khách hàng</h4>
+          <h4 class="modal-title" style="font-size: 18px">
+            Thông tin chi tiết khách hàng
+          </h4>
           <button type="button" class="close" data-dismiss="modal">
             &times;
           </button>
@@ -53,9 +58,9 @@ export default {
               Thông tin cá nhân
             </button>
             <div
-              v-if="isActive"
+              v-if="isActive || activeInfo"
               id="personal-info"
-              class="collapse my-2 border-all"
+              class="my-2 border-all"
             >
               <img
                 :src="item.Customer.avatar"
@@ -235,7 +240,12 @@ export default {
             <div v-if="isActive" id="event" class="collapse">
               <Table
                 :items="item.Events"
-                :fields="['Tên sự kiện', 'Thời gian diển ra', 'Địa điểm', 'Nội dung']"
+                :fields="[
+                  'Tên sự kiện',
+                  'Thời gian diển ra',
+                  'Địa điểm',
+                  'Nội dung',
+                ]"
                 :labels="['name', 'time_duration', 'place', 'content']"
                 :borderTableAll="true"
                 :showActionList="[false, false, false]"

@@ -8,7 +8,12 @@
           <h4 class="modal-title" style="font-size: 18px">
             Sửa loại khách hàng
           </h4>
-          <button type="button" class="close" data-dismiss="modal" @click="$emit('cancel')">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            @click="$emit('cancel')"
+          >
             &times;
           </button>
         </div>
@@ -17,10 +22,23 @@
           <div class="container">
             <form @submit.prevent>
               <div class="form-group">
-                <label for="name">Name (<span style="color: red;">*</span>)</label>
-                <input type="text" class="form-control" id="name" placeholder="" v-model="item.name" required />
+                <label for="name"
+                  >Name (<span style="color: red">*</span>)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  placeholder=""
+                  v-model="item.name"
+                  required
+                />
               </div>
-              <button type="submit" class="btn btn-primary" @click="handleUpdate(item)">
+              <button
+                type="submit"
+                class="btn btn-warning"
+                @click="handleUpdate(item)"
+              >
                 Cập nhật
               </button>
             </form>
@@ -43,14 +61,12 @@ export default {
 
   setup(props, context) {
     const handleUpdate = async (item) => {
-      context.emit('update', {...item})
-    }
-
+      context.emit("update", { ...item });
+    };
 
     return {
       handleUpdate,
-      
-    }
+    };
   },
 };
 </script>
