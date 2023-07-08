@@ -273,7 +273,9 @@ io.on("connection", (socket) => {
                 await createCusEvent(customer, document);
               }
             }
-            await sendMail(customer.email, customer.name, age);
+            if (customer.email != "Chưa cập nhật") {
+              await sendMail(customer.email, customer.name, age);
+            }
           }
         } else {
           await createNoti(customerBirthday, age, customer, _id, nameEm);
@@ -355,7 +357,9 @@ io.on("connection", (socket) => {
               await createCusEvent(customer, document);
             }
           }
-          await sendMail(customer.email, customer.name, age);
+          if (customer.email != "Chưa cập nhật") {
+            await sendMail(customer.email, customer.name, age);
+          }
           io.emit("notiTask");
         }
       }
