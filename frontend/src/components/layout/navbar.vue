@@ -245,7 +245,7 @@ export default {
     onMounted(async () => {
       const _idEmployee = sessionStorage.getItem("employeeId");
       data.Notice = await notificationService.get(_idEmployee);
-      console.log("Tên thông báo", data.Notice);
+      // console.log("Tên thông báo", data.Notice);
       count.value = 0;
       for (const value of data.Notice.documents) {
         if (value.isRead == false) {
@@ -325,8 +325,8 @@ export default {
       });
       return capitalizedWords.join(" ");
     };
-    const employeeName = capitalizeFirstLetter(data.employeeName);
-    const roleName = capitalizeFirstLetter(data.role);
+    const employeeName = capitalizeFirstLetter(data.employeeName ? data.employeeName : "Admin");
+    const roleName = capitalizeFirstLetter(data.role ? data.role : "Quản trị hệ thống");
 
     // logout
     const showDropdown = ref(false);
@@ -468,7 +468,7 @@ export default {
       >
         <img
           class="rounded-circle cursor-pointer"
-          :src="getAvatarUrl(data.employeeName)"
+          :src="getAvatarUrl(data.employeeName ? data.employeeName : 'Admin')"
           alt="Avatar"
         />
         <div

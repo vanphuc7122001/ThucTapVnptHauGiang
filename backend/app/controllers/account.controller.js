@@ -220,6 +220,8 @@ exports.login = async (req, res, next) => {
       return value.user_name === user_name;
     });
 
+    // console.log("Usersss login", users);
+
     if (users.length === 0) {
       return res.send({
         msg: "Tên tài khoản hoặc mật khẩu không hợp lệ!",
@@ -232,6 +234,7 @@ exports.login = async (req, res, next) => {
     // const isPasswordValid = true;
     if (isPasswordValid) {
       const token = jwt.sign({ userId: user.id }, secretKey);
+      // console.log("user signed", user);
       return res.send({
         error: false,
         token: token,

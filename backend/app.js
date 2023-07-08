@@ -12,6 +12,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
+const bcrypt = require("bcryptjs");
 
 //mail
 const nodemailer = require("nodemailer");
@@ -39,7 +40,7 @@ const {
   Role,
   Employee,
   Permission,
-} = require("../models/index.model.js");
+} = require("./app/models/index.model");
 
 const sendMail = async (email, name, age) => {
   const transporter = nodemailer.createTransport({
@@ -684,57 +685,37 @@ const convertToLowercase = (req, res, next) => {
   }
   next();
 };
-// const createAccount = async (req, res, next) => {
-//   const accounts = await Account.findAll();
-//   for (let value of accounts) {
-//     if (value.user_name == req.body.user_name) {
-//       return res.send({
-//         error: true,
-//         user_name: false,
-//         msg: `Đã tồn tại tài khoản ${value.user_name}.`,
-//       });
-//     }
-//   }
+const createAccount = async (req, res, next) => {
+  // console.log("Create Account");
+  const accounts = await Account.findAll();
+  const username = "admin";
+  const password = "admin";
+  let isCheckUser = false;
+  for (let value of accounts) {
+    if (value.user_name == username) {
+      isCheckUser = true;
+      break;
+    }
+  }
 
-//   if (Object.keys(req.body).length >= 4 && req.body.checkUser == false) {
-//     const { EmployeeId, roleId, password, user_name } = req.body;
-//     const accounts = await Account.findAll();
-//     for (let value of accounts) {
-//       if (value.user_name == user_name) {
-//         return res.send({
-//           error: true,
-//           msg: `Đã tồn tại tài khoản ${value.user_name}.`,
-//         });
-//       }
-//     }
-//     try {
-//       const hashedPassword = await bcrypt.hash(password, 10);
-//       const document = await Account.create({
-//         user_name: user_name,
-//         password: hashedPassword,
-//         roleId: roleId,
-//         EmployeeId: EmployeeId,
-//       });
-//       return res.send({
-//         error: false,
-//         msg: `Bạn đã tạo thành công tài khoản ${document.user_name}`,
-//         document,
-//       });
-//     } catch (error) {
-//       console.log(error.message);
-//       return res.send({
-//         error: true,
-//         msg: error.message,
-//       });
-//     }
-//   } else {
-//     return res.send({
-//       error: true,
-//       msg: `Vui lòng nhập đủ thông tin.`,
-//       user_name: true,
-//     });
-//   }
-// };
+  if (!isCheckUser) {
+    console.log("isCheckUser");
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const document = await Account.create({
+        user_name: username,
+        password: hashedPassword,
+      });
+      next();
+    } catch (error) {
+      console.log(error.message);
+      next();
+    }
+  }
+  next();
+};
+
+app.use(createAccount);
 app.use(convertToLowercase);
 
 // initialize router

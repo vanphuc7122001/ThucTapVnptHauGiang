@@ -118,39 +118,45 @@ export default {
             password: password.value,
           }
         );
-
-        let permissionList = response.data.document.Role.Permissions;
-        permissionList = permissionList.map((value) => value.name);
-
-        sessionStorage.setItem("token", response.data.token);
-
-        // Kiểm tra phản hồi từ backend
-        if (response.data.error == false) {
-          sessionStorage.setItem(
-            "employeeId",
-            response.data.document.Employee._id
-          );
-          sessionStorage.setItem(
-            "employeeName",
-            response.data.document.Employee.name
-          );
-          sessionStorage.setItem("role", response.data.document.Role.name);
-          // sessionStorage.setItem("role", response.data.document.Role.name);
-
-          sessionStorage.setItem(
-            "permissionList",
-            JSON.stringify(permissionList)
-          );
-          sessionStorage.setItem("user", response.data.document.userName);
-          // router.push({ name: "Dashboard" });
-
-          let user = sessionStorage.getItem("user");
-          console.log("user:", user);
+        console.log('admin',response.data.document.user_name);
+        if (response.data.document.user_name == "admin") {
+          sessionStorage.setItem("user", response.data.document.user_name);
+          sessionStorage.setItem("token", response.data.token);
           location.reload();
         } else {
-          // Đăng nhập thất bại, xử lý thông báo lỗi hoặc hiển thị thông báo lỗi trên giao diện
-          alert_error(`Login`, `${response.data.msg}`);
-          router.push({ name: "Login" });
+          let permissionList = response.data.document.Role.Permissions;
+          permissionList = permissionList.map((value) => value.name);
+
+          sessionStorage.setItem("token", response.data.token);
+
+          // Kiểm tra phản hồi từ backend
+          if (response.data.error == false) {
+            sessionStorage.setItem(
+              "employeeId",
+              response.data.document.Employee._id
+            );
+            sessionStorage.setItem(
+              "employeeName",
+              response.data.document.Employee.name
+            );
+            sessionStorage.setItem("role", response.data.document.Role.name);
+            // sessionStorage.setItem("role", response.data.document.Role.name);
+
+            sessionStorage.setItem(
+              "permissionList",
+              JSON.stringify(permissionList)
+            );
+            sessionStorage.setItem("user", response.data.document.user_name);
+            // router.push({ name: "Dashboard" });
+
+            let user = sessionStorage.getItem("user");
+            // console.log("user:", user);
+            location.reload();
+          } else {
+            // Đăng nhập thất bại, xử lý thông báo lỗi hoặc hiển thị thông báo lỗi trên giao diện
+            alert_error(`Login`, `${response.data.msg}`);
+            router.push({ name: "Login" });
+          }
         }
       } catch (error) {
         console.log(error);
