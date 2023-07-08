@@ -1361,6 +1361,9 @@ export default {
     const initRenewTask = async (value, value1) => {
       if (value.EmployeesList.length == 0) {
         alert_warning("Lưu ý", "Phân công chưa được giao cho nhân viên");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
         return;
       }
 
