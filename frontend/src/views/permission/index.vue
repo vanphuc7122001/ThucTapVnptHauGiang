@@ -56,6 +56,14 @@ import {
   alert_delete_wide,
 } from "../common/import.js";
 
+import {
+  isCreatePermission,
+  isDeletePermission,
+  isReadPermission,
+  isSetPermission,
+} from '../../use/getSessionItem'
+
+
 export default {
   components: {
     Table,
@@ -337,6 +345,10 @@ export default {
       handleSelectAll,
       deleteMany,
       removeItem,
+      isCreatePermission,
+      isDeletePermission,
+      isReadPermission,
+      isSetPermission,
     };
   },
 };
@@ -427,6 +439,7 @@ export default {
           class="btn btn-danger mr-3"
           data-toggle="modal"
           data-target="#model-delete-all"
+          :disabled="isDeletePermission() ? false : true"
         >
           <span id="delete-all" class="mx-2" @click="deleteMany()">Xoá</span>
         </button>
@@ -436,6 +449,7 @@ export default {
           class="btn btn-primary"
           data-toggle="modal"
           data-target="#model-add"
+          :disabled="isCreatePermission() ? false : true"
         >
           <span id="add" class="mx-2">Thêm</span>
         </button>
@@ -447,7 +461,7 @@ export default {
       :items="setPages"
       :fields="['Tên quyền', 'Loại quyền']"
       :labels="['name', 'pTValue']"
-      :showActionList="[false, false, true]"
+      :showActionList="[false, false, isDeletePermission() ? true : false]"
       :startRow="data.startRow"
       :selectAll="data.selectAll"
       @selectAll="(value) => handleSelectAll(value)"

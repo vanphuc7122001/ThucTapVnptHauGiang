@@ -61,7 +61,7 @@ import {
   // isReadRole,
   isCreateRole,
   isDeleteRole,
-  isSetPermission
+  isSetRole
 } from '../../use/getSessionItem'
 
 export default {
@@ -363,6 +363,9 @@ export default {
       handleSelectAll,
       deleteMany,
       removeItem,
+      isCreateRole,
+      isDeleteRole,
+      isSetRole
     };
   },
 };
@@ -454,6 +457,7 @@ export default {
           data-toggle="modal"
           data-target="#model-delete-all"
           @click="deleteMany()"
+          :disabled="isDeleteRole() ? false : true"
         >
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
@@ -463,6 +467,7 @@ export default {
           class="btn btn-primary"
           data-toggle="modal"
           data-target="#model-add"
+          :disabled="isCreateRole() ? false : true"
         >
           <span id="add" class="mx-2">Thêm</span>
         </button>
@@ -473,6 +478,7 @@ export default {
           data-toggle="modal"
           data-target="#model-setPermission"
           @click="setPermission()"
+          :disabled="isSetRole() ? false : true"
         >
           <span style="font-size: 14px" id="setPermission" class="mx-2"
             >Tạo quyền</span
@@ -486,7 +492,7 @@ export default {
       :items="setPages"
       :fields="['Tên vai trò', 'Quyền']"
       :labels="['name', 'pTList']"
-      :showActionList="[flase, flase, true]"
+      :showActionList="[false, false, isDeleteRole() ? true : false]"
       :startRow="data.startRow"
       :selectAll="data.selectAll"
       @selectAll="(value) => handleSelectAll(value)"
