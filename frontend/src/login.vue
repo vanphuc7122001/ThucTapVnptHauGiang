@@ -122,8 +122,6 @@ export default {
         let permissionList = response.data.document.Role.Permissions;
         permissionList = permissionList.map((value) => value.name);
 
-       
-
         sessionStorage.setItem("token", response.data.token);
 
         // Kiểm tra phản hồi từ backend
@@ -143,7 +141,11 @@ export default {
             "permissionList",
             JSON.stringify(permissionList)
           );
+          sessionStorage.setItem("user", response.data.document.userName);
           // router.push({ name: "Dashboard" });
+
+          let user = sessionStorage.getItem("user");
+          console.log("user:", user);
           location.reload();
         } else {
           // Đăng nhập thất bại, xử lý thông báo lỗi hoặc hiển thị thông báo lỗi trên giao diện

@@ -34,6 +34,12 @@ const io = require("socket.io")(server, {
     origin: "*",
   },
 });
+const {
+  Account,
+  Role,
+  Employee,
+  Permission,
+} = require("../models/index.model.js");
 
 const sendMail = async (email, name, age) => {
   const transporter = nodemailer.createTransport({
@@ -678,7 +684,57 @@ const convertToLowercase = (req, res, next) => {
   }
   next();
 };
+// const createAccount = async (req, res, next) => {
+//   const accounts = await Account.findAll();
+//   for (let value of accounts) {
+//     if (value.user_name == req.body.user_name) {
+//       return res.send({
+//         error: true,
+//         user_name: false,
+//         msg: `Đã tồn tại tài khoản ${value.user_name}.`,
+//       });
+//     }
+//   }
 
+//   if (Object.keys(req.body).length >= 4 && req.body.checkUser == false) {
+//     const { EmployeeId, roleId, password, user_name } = req.body;
+//     const accounts = await Account.findAll();
+//     for (let value of accounts) {
+//       if (value.user_name == user_name) {
+//         return res.send({
+//           error: true,
+//           msg: `Đã tồn tại tài khoản ${value.user_name}.`,
+//         });
+//       }
+//     }
+//     try {
+//       const hashedPassword = await bcrypt.hash(password, 10);
+//       const document = await Account.create({
+//         user_name: user_name,
+//         password: hashedPassword,
+//         roleId: roleId,
+//         EmployeeId: EmployeeId,
+//       });
+//       return res.send({
+//         error: false,
+//         msg: `Bạn đã tạo thành công tài khoản ${document.user_name}`,
+//         document,
+//       });
+//     } catch (error) {
+//       console.log(error.message);
+//       return res.send({
+//         error: true,
+//         msg: error.message,
+//       });
+//     }
+//   } else {
+//     return res.send({
+//       error: true,
+//       msg: `Vui lòng nhập đủ thông tin.`,
+//       user_name: true,
+//     });
+//   }
+// };
 app.use(convertToLowercase);
 
 // initialize router

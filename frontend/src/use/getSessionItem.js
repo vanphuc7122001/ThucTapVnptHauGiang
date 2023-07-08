@@ -2,7 +2,8 @@ const role = sessionStorage.getItem("role");
 let permissionList = sessionStorage.getItem("permissionList");
 permissionList = JSON.parse(permissionList);
 // console.log("permissionList", permissionList);
-
+let user = sessionStorage.getItem("user");
+console.log("user:", user);
 // khách hàng
 const isDeleteCustomer = () => {
   return permissionList.includes("xoá khách hàng");

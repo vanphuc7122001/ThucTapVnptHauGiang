@@ -145,7 +145,6 @@ exports.findOne = async (req, res, next) => {
         },
       ],
     });
-   
 
     if (employee1.dataValues.Tasks.length > 0) {
       var i;
@@ -167,7 +166,7 @@ exports.findOne = async (req, res, next) => {
         customer.dataValues.email = getDecrypt(customer.dataValues.email);
         customer.dataValues.address = getDecrypt(customer.dataValues.address);
         customer.dataValues.birthday = getDecrypt(customer.dataValues.birthday);
-       
+
         if (employee1.dataValues.Tasks[i].StatusTaskId) {
           const status = await Status_Task.findOne({
             where: {
@@ -226,7 +225,6 @@ exports.deleteAll = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
- 
   const { name, birthday, address, phone, email, postionId, unitId } = req.body;
   try {
     let employees = [
