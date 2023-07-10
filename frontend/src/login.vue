@@ -147,11 +147,13 @@ export default {
               JSON.stringify(permissionList)
             );
             sessionStorage.setItem("user", response.data.document.user_name);
-            // router.push({ name: "Dashboard" });
+            
 
             let user = sessionStorage.getItem("user");
             // console.log("user:", user);
-            location.reload();
+            router.push({ name: "Dashboard" })
+            alert_success('Thành công', 'Đăng nhập thành công')
+            // location.reload();\
           } else {
             // Đăng nhập thất bại, xử lý thông báo lỗi hoặc hiển thị thông báo lỗi trên giao diện
             alert_error(`Login`, `${response.data.msg}`);
